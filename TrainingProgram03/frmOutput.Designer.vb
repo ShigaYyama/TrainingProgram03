@@ -30,6 +30,10 @@ Partial Class formOutput
         Me.grbKadai1_1 = New System.Windows.Forms.GroupBox()
         Me.Label3 = New System.Windows.Forms.Label()
         Me.Label2 = New System.Windows.Forms.Label()
+        Me.rbtJunjoAsc1_1 = New System.Windows.Forms.RadioButton()
+        Me.RadioButton1 = New System.Windows.Forms.RadioButton()
+        Me.TextBox1 = New System.Windows.Forms.TextBox()
+        Me.Label4 = New System.Windows.Forms.Label()
         Me.grbKadai1_1.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -60,7 +64,7 @@ Partial Class formOutput
         '
         'btnOutput
         '
-        Me.btnOutput.Location = New System.Drawing.Point(551, 623)
+        Me.btnOutput.Location = New System.Drawing.Point(563, 595)
         Me.btnOutput.Name = "btnOutput"
         Me.btnOutput.Size = New System.Drawing.Size(125, 40)
         Me.btnOutput.TabIndex = 3
@@ -69,7 +73,7 @@ Partial Class formOutput
         '
         'btnClose
         '
-        Me.btnClose.Location = New System.Drawing.Point(805, 623)
+        Me.btnClose.Location = New System.Drawing.Point(735, 595)
         Me.btnClose.Name = "btnClose"
         Me.btnClose.Size = New System.Drawing.Size(125, 40)
         Me.btnClose.TabIndex = 4
@@ -78,11 +82,15 @@ Partial Class formOutput
         '
         'grbKadai1_1
         '
+        Me.grbKadai1_1.Controls.Add(Me.Label4)
+        Me.grbKadai1_1.Controls.Add(Me.TextBox1)
+        Me.grbKadai1_1.Controls.Add(Me.RadioButton1)
+        Me.grbKadai1_1.Controls.Add(Me.rbtJunjoAsc1_1)
         Me.grbKadai1_1.Controls.Add(Me.Label3)
         Me.grbKadai1_1.Controls.Add(Me.Label2)
-        Me.grbKadai1_1.Location = New System.Drawing.Point(72, 250)
+        Me.grbKadai1_1.Location = New System.Drawing.Point(72, 261)
         Me.grbKadai1_1.Name = "grbKadai1_1"
-        Me.grbKadai1_1.Size = New System.Drawing.Size(811, 279)
+        Me.grbKadai1_1.Size = New System.Drawing.Size(604, 226)
         Me.grbKadai1_1.TabIndex = 5
         Me.grbKadai1_1.TabStop = False
         Me.grbKadai1_1.Text = "課題1-問題1"
@@ -104,6 +112,44 @@ Partial Class formOutput
         Me.Label2.Size = New System.Drawing.Size(53, 18)
         Me.Label2.TabIndex = 0
         Me.Label2.Text = "売上："
+        '
+        'rbtJunjoAsc1_1
+        '
+        Me.rbtJunjoAsc1_1.AutoSize = True
+        Me.rbtJunjoAsc1_1.Location = New System.Drawing.Point(188, 154)
+        Me.rbtJunjoAsc1_1.Name = "rbtJunjoAsc1_1"
+        Me.rbtJunjoAsc1_1.Size = New System.Drawing.Size(69, 22)
+        Me.rbtJunjoAsc1_1.TabIndex = 2
+        Me.rbtJunjoAsc1_1.TabStop = True
+        Me.rbtJunjoAsc1_1.Text = "昇順"
+        Me.rbtJunjoAsc1_1.UseVisualStyleBackColor = True
+        '
+        'RadioButton1
+        '
+        Me.RadioButton1.AutoSize = True
+        Me.RadioButton1.Location = New System.Drawing.Point(305, 153)
+        Me.RadioButton1.Name = "RadioButton1"
+        Me.RadioButton1.Size = New System.Drawing.Size(69, 22)
+        Me.RadioButton1.TabIndex = 3
+        Me.RadioButton1.TabStop = True
+        Me.RadioButton1.Text = "降順"
+        Me.RadioButton1.UseVisualStyleBackColor = True
+        '
+        'TextBox1
+        '
+        Me.TextBox1.Location = New System.Drawing.Point(188, 86)
+        Me.TextBox1.Name = "TextBox1"
+        Me.TextBox1.Size = New System.Drawing.Size(247, 25)
+        Me.TextBox1.TabIndex = 4
+        '
+        'Label4
+        '
+        Me.Label4.AutoSize = True
+        Me.Label4.Location = New System.Drawing.Point(459, 89)
+        Me.Label4.Name = "Label4"
+        Me.Label4.Size = New System.Drawing.Size(62, 18)
+        Me.Label4.TabIndex = 5
+        Me.Label4.Text = "円以上"
         '
         'formOutput
         '
@@ -133,4 +179,8 @@ Partial Class formOutput
     Friend WithEvents grbKadai1_1 As GroupBox
     Friend WithEvents Label3 As Label
     Friend WithEvents Label2 As Label
+    Friend WithEvents Label4 As Label
+    Friend WithEvents TextBox1 As TextBox
+    Friend WithEvents RadioButton1 As RadioButton
+    Friend WithEvents rbtJunjoAsc1_1 As RadioButton
 End Class
