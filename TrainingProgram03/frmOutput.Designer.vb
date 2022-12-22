@@ -28,6 +28,9 @@ Partial Class formOutput
         Me.btnOutput = New System.Windows.Forms.Button()
         Me.btnClose = New System.Windows.Forms.Button()
         Me.grbKadai1_1 = New System.Windows.Forms.GroupBox()
+        Me.Label3 = New System.Windows.Forms.Label()
+        Me.Label2 = New System.Windows.Forms.Label()
+        Me.grbKadai1_1.SuspendLayout()
         Me.SuspendLayout()
         '
         'Label1
@@ -75,12 +78,32 @@ Partial Class formOutput
         '
         'grbKadai1_1
         '
-        Me.grbKadai1_1.Location = New System.Drawing.Point(72, 244)
+        Me.grbKadai1_1.Controls.Add(Me.Label3)
+        Me.grbKadai1_1.Controls.Add(Me.Label2)
+        Me.grbKadai1_1.Location = New System.Drawing.Point(72, 250)
         Me.grbKadai1_1.Name = "grbKadai1_1"
         Me.grbKadai1_1.Size = New System.Drawing.Size(811, 279)
         Me.grbKadai1_1.TabIndex = 5
         Me.grbKadai1_1.TabStop = False
         Me.grbKadai1_1.Text = "課題1-問題1"
+        '
+        'Label3
+        '
+        Me.Label3.AutoSize = True
+        Me.Label3.Location = New System.Drawing.Point(62, 158)
+        Me.Label3.Name = "Label3"
+        Me.Label3.Size = New System.Drawing.Size(53, 18)
+        Me.Label3.TabIndex = 1
+        Me.Label3.Text = "順序："
+        '
+        'Label2
+        '
+        Me.Label2.AutoSize = True
+        Me.Label2.Location = New System.Drawing.Point(62, 89)
+        Me.Label2.Name = "Label2"
+        Me.Label2.Size = New System.Drawing.Size(53, 18)
+        Me.Label2.TabIndex = 0
+        Me.Label2.Text = "売上："
         '
         'formOutput
         '
@@ -95,6 +118,8 @@ Partial Class formOutput
         Me.Controls.Add(Me.Label1)
         Me.Name = "formOutput"
         Me.Text = "帳票出力"
+        Me.grbKadai1_1.ResumeLayout(False)
+        Me.grbKadai1_1.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -106,4 +131,6 @@ Partial Class formOutput
     Friend WithEvents btnOutput As Button
     Friend WithEvents btnClose As Button
     Friend WithEvents grbKadai1_1 As GroupBox
+    Friend WithEvents Label3 As Label
+    Friend WithEvents Label2 As Label
 End Class
