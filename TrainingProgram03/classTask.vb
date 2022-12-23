@@ -3,10 +3,8 @@ Imports System.Data.SqlClient
 Imports System.Diagnostics.Eventing
 Imports System.Reflection
 Imports System.Text
-Imports Oracle.ManagedDataAccess.Client
-Imports OracleInternal.Json
 
-Public Class classTask
+Public Class Task
 
     '配列：課題シート名
     Shared ArryTask() As String = {"課題1", "課題2", "課題PL/SQL"}
@@ -18,14 +16,14 @@ Public Class classTask
 
 
     'コンボボックス1に入れる値を配列で格納
-    Public Shared Function Cbo1SetItems() As String()
+    Public Shared Function cbo1SetItems() As String()
 
         Return ArryTask
 
     End Function
 
     'コンボボックス2に入れる値を配列で格納(コンボボックス1の値で条件分岐する条件式)
-    Public Shared Function Cbo2SetItems(cbo1 As String) As String()
+    Public Shared Function cbo2SetItems(cbo1 As String) As String()
 
         Dim cbo2 As String() = Nothing
 
@@ -49,8 +47,8 @@ Public Class classTask
     End Function
 
 
-    'SQL文を返すための準備(大村さん修正)
-    Public Shared Function CboSelected(cbo1Index As Integer, cbo2Index As Integer) As Integer
+    'SQL文を返すための準備
+    Public Shared Function cboSelected(cbo1Index As Integer, cbo2Index As Integer) As Integer
 
         ' 選択されていない場合は-1を返す
         If cbo1Index < 0 Or cbo2Index < 0 Then
@@ -63,78 +61,43 @@ Public Class classTask
 
 
 
-    Public Shared Function SelectSql(Subject As Integer) As String
+    'Public Shared Function selectSql(Subject As Integer) As String
 
-        'コンボボックスの選択された値によって、Functionで返す値を条件分岐する
-        Dim ExcSelect As String = Nothing
+    '    'コンボボックスの選択された値によって、Functionで返す値を条件分岐する
+    '    Dim ExcSelect As String = Nothing
 
-        Select Case Subject
-                '回答文　課題①
-            Case 0
-                ExcSelect = Query1_1()
-            Case 1
-                ExcSelect = Query1_2()
-            Case 2
-                ExcSelect = Query1_3()
-            Case 3
-                ExcSelect = Query1_4()
-            Case 4
-                ExcSelect = Query1_5()
-            Case 5
-                ExcSelect = Query1_6()
-            Case 6
-                ExcSelect = Query1_7()
-                '回答文　課題②
-            Case 10
-                ExcSelect = Query2_1()
-            Case 11
-                ExcSelect = Query2_2()
-            Case 12
-                ExcSelect = Query2_3()
-            Case 13
-                ExcSelect = Query2_4()
-            Case 14
-                ExcSelect = Query2_5()
-                '回答文　課題③
-            Case 20
-                ExcSelect = Query3_1()
-            Case 21
-                ExcSelect = Query3_2()
-                '回答文　課題④
-            Case 30
-                ExcSelect = Query4_1()
-            Case 31
-                ExcSelect = Query4_2()
-            Case 32
-                ExcSelect = Query4_3()
-            Case 33
-                ExcSelect = Query4_4()
-            Case 34
-                ExcSelect = Query4_5()
-            Case 35
-                ExcSelect = Query4_6()
-            Case 36
-                ExcSelect = Query4_7()
-            Case 37
-                ExcSelect = Query4_8()
-            Case 38
-                ExcSelect = Query4_9()
-                '回答文　課題⑤
-            Case 40
-                ExcSelect = Query5_1()
-                '回答文　課題⑥
-            Case 50
-                ExcSelect = Query6_1()
+    '    Select Case Subject
+    '            '回答文　課題1
+    '        Case 0
+    '            ExcSelect = Query1_1()
+    '        Case 1
+    '            ExcSelect = Query1_2()
+    '        Case 2
+    '            ExcSelect = Query1_3()
+    '        Case 3
+    '            ExcSelect = Query1_4()
+    '        Case 4
+    '            ExcSelect = Query1_5()
+    '        Case 5
+    '            ExcSelect = Query1_6()
+    '        Case 6
+    '            ExcSelect = Query1_7()
+    '            '回答文　課題2
+    '        Case 10
+    '            ExcSelect = Query2_1()
+    '            '回答文　課題PL/SQL
+    '        Case 20
+    '            ExcSelect = Query3_1()
 
-        End Select
+    '    End Select
 
-        Return ExcSelect
+    '    Return ExcSelect
 
-    End Function
+    'End Function
 
 
     '回答文　課題①
-    Public Shared Function Query1_1() As String
+    Public Shared Function Query1_1(earn As Integer, order As String) As String
 
         Dim QueryComm As String = Nothing
 
@@ -142,8 +105,8 @@ Public Class classTask
         QueryComm &= "FROM 顧客マスタ" & vbLf
         QueryComm &= "INNER JOIN 売場トラン" & vbLf
         QueryComm &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
-        QueryComm &= "WHERE 売場トラン.売上金額>= 10000" & vbLf
-        QueryComm &= "ORDER BY 顧客マスタ.顧客番号 ASC"
+        QueryComm &= "WHERE 売場トラン.売上金額>= " & earn & vbLf
+        QueryComm &= "ORDER BY 顧客マスタ.顧客番号 " & order
 
         Query1_1 = QueryComm
 

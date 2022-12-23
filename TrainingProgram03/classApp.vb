@@ -1,4 +1,4 @@
-﻿Public Class classApp
+﻿Public Class App
 
     '2重起動確認
     Public Shared Sub DuplicateCheck()

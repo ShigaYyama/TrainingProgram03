@@ -2,7 +2,7 @@
 Imports Microsoft.Office.Interop
 Imports Oracle.ManagedDataAccess.Client
 
-Public Class classDataBase
+Public Class DataBase
 
     '接続先情報
     Shared strConnect As String = "Data Source=localhost/orclpdb; User ID=TEST_USER; Password=TEST_USER_PASS;"
@@ -40,16 +40,13 @@ Public Class classDataBase
     End Sub
 
     'SQLの結果をエクセル出力
-    Public Shared Sub OutPuting(cbo1 As Integer, cbo2 As Integer)
-
-        Dim IntSelected As Integer = Tasks.CboSelected(cbo1, cbo2)
-        Dim OraObje As String = Tasks.SelectSql(IntSelected)
+    Public Shared Sub outPuting(oraObje As String)
 
         'データベースに接続(Oracle)
         Using Conn As New OracleConnection(strConnect)
             Conn.Open()
 
-            Using OraComm As OracleCommand = New OracleCommand(OraObje, Conn)
+            Using OraComm As OracleCommand = New OracleCommand(oraObje, Conn)
                 Using OraAdap As New OracleDataAdapter(OraComm)
 
                     'Oracleをエクセル出力用に読み込む
