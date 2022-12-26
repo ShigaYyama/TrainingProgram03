@@ -450,7 +450,7 @@ Partial Class formOutput
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(10.0!, 18.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(2009, 651)
+        Me.ClientSize = New System.Drawing.Size(878, 651)
         Me.Controls.Add(Me.grbKadai2_1)
         Me.Controls.Add(Me.grbKadai1_7)
         Me.Controls.Add(Me.grbKadai1_6)
