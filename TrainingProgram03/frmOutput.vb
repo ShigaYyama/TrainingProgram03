@@ -82,7 +82,13 @@ Public Class formOutput
     '出力ボタン押下時
     Private Sub btnOutput_Click(sender As Object, e As EventArgs) Handles btnOutput.Click
 
-        Dim ansQuery As String = Task.queryCreate(cboKadai1.SelectedIndex, cboKadai2.SelectedIndex)
+        Dim str As String = Nothing
+        Dim ansQuery As String
+        If Task.queryCreate(cboKadai1.SelectedIndex, cboKadai2.SelectedIndex, str) = False Then
+            Exit Sub
+        Else
+            ansQuery = str
+        End If
 
         DataBase.outPuting(ansQuery)
 

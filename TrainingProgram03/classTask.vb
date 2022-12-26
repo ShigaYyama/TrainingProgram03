@@ -62,11 +62,9 @@ Public Class Task
     End Function
 
     'SQL文
-    Public Shared Function queryCreate(cbo1 As String, cbo2 As String) As String
+    Public Shared Function queryCreate(cbo1 As String, cbo2 As String, ByRef ansStr As String) As Boolean
 
-        ', ByRef ansStr As String, ByRef ansBool As Boolean
-
-        queryCreate = Nothing
+        queryCreate = False
         Dim oraComm As String = Nothing
 
         'コンボボックス1,2の値で返した数値によって条件分岐
@@ -79,13 +77,13 @@ Public Class Task
                 Dim i As Integer
                 If Not Integer.TryParse(formOutput.txtUriage1_1.Text, i) Then
                     MessageBox.Show("数値を入力してください", "帳票出力", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                    Exit Function
+                    Return False
                 End If
 
                 '例外処理：順序が選択されていない場合
                 If formOutput.rbtJunjoAsc1_1.Checked = False And formOutput.rbtJunjoDesc1_1.Checked = False Then
                     MessageBox.Show("昇順又は降順を選択してください", "帳票出力", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                    Exit Function
+                    Return False
                 End If
 
                 '処理内容
@@ -109,7 +107,7 @@ Public Class Task
                 '例外処理：性別がいずれも選択されていない場合
                 If formOutput.rbtSexM1_2.Checked = False And formOutput.rbtSexF1_2.Checked = False And formOutput.rbtSexMF1_2.Checked = False Then
                     MessageBox.Show("性別を選択してください", "帳票出力", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                    Exit Function
+                    Return False
                 End If
 
                 '処理内容
@@ -151,7 +149,7 @@ Public Class Task
                 '例外処理：順序が選択されていない場合
                 If formOutput.rbtJunjoAsc1_4.Checked = False And formOutput.rbtJunjoDesc1_4.Checked = False Then
                     MessageBox.Show("昇順又は降順を選択してください", "帳票出力", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                    Exit Function
+                    Return False
                 End If
 
                 '処理内容
@@ -177,7 +175,7 @@ Public Class Task
                 Dim i As Integer
                 If Integer.TryParse(formOutput.txtNumberFrom1_5.Text, i) = False Or Integer.TryParse(formOutput.txtNumberTo1_5.Text, i) = False Then
                     MessageBox.Show("数値を入力してください", "帳票出力", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                    Exit Function
+                    Return False
                 End If
 
                 '例外処理：Noに、数値以外を入力した場合
@@ -185,12 +183,12 @@ Public Class Task
                 Dim maxNum As Integer = 99999
                 If CInt(formOutput.txtNumberFrom1_5.Text) < minNum Or CInt(formOutput.txtNumberFrom1_5.Text) > maxNum Then
                     MessageBox.Show("数値は" & minNum & "から" & maxNum & "の間で指定してください", "帳票出力", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                    Exit Function
+                    Return False
                 End If
 
                 If CInt(formOutput.txtNumberTo1_5.Text) < minNum Or CInt(formOutput.txtNumberTo1_5.Text) > maxNum Then
                     MessageBox.Show("数値は" & minNum & "から" & maxNum & "の間で指定してください", "帳票出力", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                    Exit Function
+                    Return False
                 End If
 
                 '処理内容
@@ -246,7 +244,7 @@ Public Class Task
                 Dim i As Integer
                 If Integer.TryParse(formOutput.txtNumberFrom2_1.Text, i) = False Or Integer.TryParse(formOutput.txtNumberTo2_1.Text, i) = False Then
                     MessageBox.Show("数値を入力してください", "帳票出力", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                    Exit Function
+                    Return False
                 End If
 
                 '例外処理：Noに、数値以外を入力した場合
@@ -254,12 +252,12 @@ Public Class Task
                 Dim maxNum As Integer = 99999
                 If CInt(formOutput.txtNumberFrom2_1.Text) < minNum Or CInt(formOutput.txtNumberFrom2_1.Text) > maxNum Then
                     MessageBox.Show("数値は" & minNum & "から" & maxNum & "の間で指定してください", "帳票出力", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                    Exit Function
+                    Return False
                 End If
 
                 If CInt(formOutput.txtNumberTo2_1.Text) < minNum Or CInt(formOutput.txtNumberTo2_1.Text) > maxNum Then
                     MessageBox.Show("数値は" & minNum & "から" & maxNum & "の間で指定してください", "帳票出力", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                    Exit Function
+                    Return False
                 End If
 
                 '処理内容
@@ -283,7 +281,8 @@ Public Class Task
 
         End Select
 
-        Return oraComm
+        ansStr = oraComm
+        Return True
 
     End Function
 
