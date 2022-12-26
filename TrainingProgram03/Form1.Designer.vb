@@ -37,15 +37,15 @@ Partial Class frmGrb
         Me.grbKadai1_3 = New System.Windows.Forms.GroupBox()
         Me.ltbSalseFloor1_3 = New System.Windows.Forms.ListBox()
         Me.grbKadai1_4 = New System.Windows.Forms.GroupBox()
+        Me.dtpBirthday1_4 = New System.Windows.Forms.DateTimePicker()
         Me.rbtJunjoDesc1_4 = New System.Windows.Forms.RadioButton()
         Me.rbtJunjoAsc1_4 = New System.Windows.Forms.RadioButton()
         Me.Label1 = New System.Windows.Forms.Label()
-        Me.dtpBirthday1_4 = New System.Windows.Forms.DateTimePicker()
         Me.grbKadai1_5 = New System.Windows.Forms.GroupBox()
-        Me.txtNumberFrom1_5 = New System.Windows.Forms.TextBox()
-        Me.Label5 = New System.Windows.Forms.Label()
         Me.Label6 = New System.Windows.Forms.Label()
         Me.txtNumberTo1_5 = New System.Windows.Forms.TextBox()
+        Me.Label5 = New System.Windows.Forms.Label()
+        Me.txtNumberFrom1_5 = New System.Windows.Forms.TextBox()
         Me.grbKadai1_6 = New System.Windows.Forms.GroupBox()
         Me.ltbSalesFloor1_6 = New System.Windows.Forms.ListBox()
         Me.grbKadai1_7 = New System.Windows.Forms.GroupBox()
@@ -224,6 +224,14 @@ Partial Class frmGrb
         Me.grbKadai1_4.TabStop = False
         Me.grbKadai1_4.Text = "課題1-問題4"
         '
+        'dtpBirthday1_4
+        '
+        Me.dtpBirthday1_4.Format = System.Windows.Forms.DateTimePickerFormat.Custom
+        Me.dtpBirthday1_4.Location = New System.Drawing.Point(27, 68)
+        Me.dtpBirthday1_4.Name = "dtpBirthday1_4"
+        Me.dtpBirthday1_4.Size = New System.Drawing.Size(220, 25)
+        Me.dtpBirthday1_4.TabIndex = 7
+        '
         'rbtJunjoDesc1_4
         '
         Me.rbtJunjoDesc1_4.AutoSize = True
@@ -255,13 +263,6 @@ Partial Class frmGrb
         Me.Label1.TabIndex = 4
         Me.Label1.Text = "順序："
         '
-        'dtpBirthday1_4
-        '
-        Me.dtpBirthday1_4.Location = New System.Drawing.Point(27, 68)
-        Me.dtpBirthday1_4.Name = "dtpBirthday1_4"
-        Me.dtpBirthday1_4.Size = New System.Drawing.Size(220, 25)
-        Me.dtpBirthday1_4.TabIndex = 7
-        '
         'grbKadai1_5
         '
         Me.grbKadai1_5.Controls.Add(Me.Label6)
@@ -275,28 +276,12 @@ Partial Class frmGrb
         Me.grbKadai1_5.TabStop = False
         Me.grbKadai1_5.Text = "課題1-問題5"
         '
-        'txtNumberFrom1_5
-        '
-        Me.txtNumberFrom1_5.Location = New System.Drawing.Point(72, 98)
-        Me.txtNumberFrom1_5.Name = "txtNumberFrom1_5"
-        Me.txtNumberFrom1_5.Size = New System.Drawing.Size(155, 25)
-        Me.txtNumberFrom1_5.TabIndex = 0
-        '
-        'Label5
-        '
-        Me.Label5.AutoSize = True
-        Me.Label5.Location = New System.Drawing.Point(13, 101)
-        Me.Label5.Name = "Label5"
-        Me.Label5.Size = New System.Drawing.Size(57, 27)
-        Me.Label5.TabIndex = 1
-        Me.Label5.Text = "No："
-        '
         'Label6
         '
         Me.Label6.AutoSize = True
         Me.Label6.Location = New System.Drawing.Point(281, 101)
         Me.Label6.Name = "Label6"
-        Me.Label6.Size = New System.Drawing.Size(39, 27)
+        Me.Label6.Size = New System.Drawing.Size(26, 18)
         Me.Label6.TabIndex = 3
         Me.Label6.Text = "～"
         '
@@ -306,6 +291,22 @@ Partial Class frmGrb
         Me.txtNumberTo1_5.Name = "txtNumberTo1_5"
         Me.txtNumberTo1_5.Size = New System.Drawing.Size(155, 25)
         Me.txtNumberTo1_5.TabIndex = 2
+        '
+        'Label5
+        '
+        Me.Label5.AutoSize = True
+        Me.Label5.Location = New System.Drawing.Point(13, 101)
+        Me.Label5.Name = "Label5"
+        Me.Label5.Size = New System.Drawing.Size(38, 18)
+        Me.Label5.TabIndex = 1
+        Me.Label5.Text = "No："
+        '
+        'txtNumberFrom1_5
+        '
+        Me.txtNumberFrom1_5.Location = New System.Drawing.Point(72, 98)
+        Me.txtNumberFrom1_5.Name = "txtNumberFrom1_5"
+        Me.txtNumberFrom1_5.Size = New System.Drawing.Size(155, 25)
+        Me.txtNumberFrom1_5.TabIndex = 0
         '
         'grbKadai1_6
         '

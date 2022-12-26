@@ -108,7 +108,7 @@ Public Class formOutput
             Case 3
 
                 Dim intDay As Integer
-                intDay = CInt(dtpBirthday1_4.Value.ToString)
+                intDay = CInt(dtpBirthday1_4.Value.ToString("yyyyMMdd"))
 
                 Dim strOrder As String
                 If rbtJunjoAsc1_1.Checked = True Then
