@@ -96,7 +96,7 @@ Public Class Task
     'End Function
 
 
-    '回答文　課題①
+    '回答文　課題1
     Public Shared Function Query1_1(earn As Integer, order As String) As String
 
         Dim QueryComm As String = Nothing
@@ -111,7 +111,7 @@ Public Class Task
         Query1_1 = QueryComm
 
     End Function
-    Public Shared Function Query1_2() As String
+    Public Shared Function Query1_2(gender As String) As String
 
         Dim QueryComm As String = Nothing
 
@@ -119,12 +119,13 @@ Public Class Task
         QueryComm &= "FROM 売場トラン" & vbLf
         QueryComm &= "INNER JOIN 顧客マスタ" & vbLf
         QueryComm &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
-        QueryComm &= "GROUP BY 顧客マスタ.性別"
+        QueryComm &= "GROUP BY 顧客マスタ.性別" & vbLf
+        QueryComm &= "HAVING 顧客マスタ.性別 IN ( " & gender & " )"
 
         Query1_2 = QueryComm
 
     End Function
-    Public Shared Function Query1_3() As String
+    Public Shared Function Query1_3(area As String) As String
 
         Dim QueryComm As String = Nothing
 
@@ -132,38 +133,42 @@ Public Class Task
         QueryComm &= "FROM 顧客マスタ" & vbLf
         QueryComm &= "INNER JOIN 売場トラン" & vbLf
         QueryComm &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
-        QueryComm &= "WHERE 売場トラン.売場 = '食品'" & vbLf
-        QueryComm &= "GROUP BY 顧客マスタ.氏名'"
+        QueryComm &= "WHERE 売場トラン.売場 = '" & area & "'" & vbLf
+        QueryComm &= "GROUP BY 顧客マスタ.氏名"
 
         Query1_3 = QueryComm
 
     End Function
-    Public Shared Function Query1_4() As String
+    Public Shared Function Query1_4(day As Integer, order As String) As String
 
         Dim QueryComm As String = Nothing
 
-        QueryComm &= "SELECT 氏名,TRUNC((20220506 - TO_CHAR(生年月日, 'YYYYMMDD')) /10000, 0) AS 年齢" & vbLf
+        QueryComm &= "SELECT 氏名,TRUNC((" & day & " - TO_CHAR(生年月日, 'YYYYMMDD')) /10000, 0) AS 年齢" & vbLf
         QueryComm &= "FROM 顧客マスタ" & vbLf
-        QueryComm &= "ORDER BY 顧客番号 ASC"
+        QueryComm &= "ORDER BY 顧客番号 " & order
 
         Query1_4 = QueryComm
 
     End Function
 
-    Public Shared Function Query1_5() As String
+    Public Shared Function Query1_5(minNum As Integer, maxNum As Integer) As String
 
         Dim QueryComm As String = Nothing
 
         QueryComm &= "SELECT 氏名,連絡先１ AS 連絡先" & vbLf
         QueryComm &= "FROM 顧客マスタ" & vbLf
+        QueryComm &= "WHERE 顧客番号" & vbLf
+        QueryComm &= "BETWEEN '" & minNum & "' AND '" & maxNum & "'" & vbLf
         QueryComm &= "UNION SELECT 氏名,連絡先２ AS 連絡先" & vbLf
-        QueryComm &= "FROM 顧客マスタ"
+        QueryComm &= "FROM 顧客マスタ" & vbLf
+        QueryComm &= "WHERE 顧客番号" & vbLf
+        QueryComm &= "BETWEEN '" & minNum & "' AND '" & maxNum & "'"
 
         Query1_5 = QueryComm
 
     End Function
 
-    Public Shared Function Query1_6() As String
+    Public Shared Function Query1_6(area As String) As String
 
         Dim QueryComm As String = Nothing
 
@@ -171,13 +176,13 @@ Public Class Task
         QueryComm &= "FROM 顧客マスタ" & vbLf
         QueryComm &= "LEFT JOIN 売場トラン" & vbLf
         QueryComm &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
-        QueryComm &= "AND 売場トラン.売場 IN('レストラン')" & vbLf
+        QueryComm &= "AND 売場トラン.売場 IN('" & area & "')" & vbLf
         QueryComm &= "GROUP BY 顧客マスタ.氏名"
 
         Query1_6 = QueryComm
 
     End Function
-    Public Shared Function Query1_7() As String
+    Public Shared Function Query1_7(name As String) As String
 
         Dim QueryComm As String = Nothing
 
@@ -186,73 +191,16 @@ Public Class Task
         QueryComm &= "LEFT JOIN 売場トラン" & vbLf
         QueryComm &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
         QueryComm &= "AND 売場トラン.売場 IN('レストラン')" & vbLf
-        QueryComm &= "WHERE 顧客マスタ.氏名 LIKE '%山%'" & vbLf
+        QueryComm &= "WHERE 顧客マスタ.氏名 LIKE '%" & name & "%'" & vbLf
         QueryComm &= "GROUP BY 顧客マスタ.氏名"
 
         Query1_7 = QueryComm
 
     End Function
 
-    '回答文　課題②
-    Public Shared Function Query2_1() As String
 
-        Dim QueryComm As String = Nothing
-
-        QueryComm &= "SELECT  s_no," & vbLf
-        QueryComm &= "CASE WHEN s_name THEN NULL WHEN '未入力' THEN s_name END" & vbLf
-        QueryComm &= "FROM ex_tbl"
-
-        Query2_1 = QueryComm
-
-    End Function
-
-    Public Shared Function Query2_2() As String
-
-        Dim QueryComm As String = Nothing
-
-        QueryComm &= "SELECT  s_no," & vbLf
-        QueryComm &= "CURRENT_DATE()" & vbLf
-        QueryComm &= "FROM ex_tbl"
-
-        Query2_2 = QueryComm
-
-    End Function
-
-    Public Shared Function Query2_3() As String
-
-        Dim QueryComm As String = Nothing
-
-        QueryComm &= "SELECT *" & vbLf
-        QueryComm &= "FROM 売場トラン"
-
-        Query2_3 = QueryComm
-
-    End Function
-
-    Public Shared Function Query2_4() As String
-
-        Dim QueryComm As String = Nothing
-
-        QueryComm &= "SELECT *" & vbLf
-        QueryComm &= "FROM 売場トラン"
-
-        Query2_4 = QueryComm
-
-    End Function
-
-    Public Shared Function Query2_5() As String
-
-        Dim QueryComm As String = Nothing
-
-        QueryComm &= "SELECT *" & vbLf
-        QueryComm &= "FROM 売場トラン"
-
-        Query2_5 = QueryComm
-
-    End Function
-
-    '回答文　課題③
-    Public Shared Function Query3_1() As String
+    '回答文　課題2
+    Public Shared Function Query2_1(minNum As Integer, maxNum As Integer) As String
 
         Dim QueryComm As String = Nothing
 
@@ -261,197 +209,11 @@ Public Class Task
         QueryComm &= "LEFT JOIN ログイン情報" & vbLf
         QueryComm &= "ON 顧客マスタ.顧客番号 = ログイン情報.顧客番号" & vbLf
         QueryComm &= "WHERE ログイン情報.顧客番号" & vbLf
-        QueryComm &= "IN ('10001','10004')"
+        QueryComm &= "BETWEEN '" & minNum & "' AND '" & maxNum & "'"
 
-        Query3_1 = QueryComm
-
-    End Function
-    Public Shared Function Query3_2() As String
-
-        Dim QueryComm As String = Nothing
-
-        QueryComm &= "SELECT ログイン情報.顧客番号,ログイン情報.LOGIN_ID,顧客マスタ.氏名" & vbLf
-        QueryComm &= "FROM 顧客マスタ" & vbLf
-        QueryComm &= "INNER JOIN ログイン情報" & vbLf
-        QueryComm &= "ON 顧客マスタ.顧客番号 = ログイン情報.顧客番号" & vbLf
-        QueryComm &= "WHERE EXISTS( SELECT 顧客番号,LOGIN_ID" & vbLf
-        QueryComm &= "FROM ログイン情報" & vbLf
-        QueryComm &= "WHERE 顧客番号" & vbLf
-        QueryComm &= "IN ('10001','10004'))"
-
-        Query3_2 = QueryComm
+        Query2_1 = QueryComm
 
     End Function
-
-    '回答文　課題④
-    Public Shared Function Query4_1() As String
-
-        Dim QueryComm As String = Nothing
-
-        QueryComm &= "SELECT *" & vbLf
-        QueryComm &= "FROM アイテムトラン" & vbLf
-        QueryComm &= "INNER JOIN 売場マスタ" & vbLf
-        QueryComm &= "ON アイテムトラン.売場番号 = 売場マスタ.売場番号"
-
-        Query4_1 = QueryComm
-
-    End Function
-
-    Public Shared Function Query4_2() As String
-
-        Dim QueryComm As String = Nothing
-
-        QueryComm &= "SELECT *" & vbLf
-        QueryComm &= "FROM アイテムトラン" & vbLf
-        QueryComm &= "INNER JOIN アイテムマスタ" & vbLf
-        QueryComm &= "ON アイテムトラン.種類番号 = アイテムマスタ.種類番号"
-
-        Query4_2 = QueryComm
-
-    End Function
-
-    Public Shared Function Query4_3() As String
-
-        Dim QueryComm As String = Nothing
-
-        QueryComm &= "INSERT INTO アイテムマスタ" & vbLf
-        QueryComm &= "SELECT アイテムトラン.種類番号,'ハム',アイテムマスタ.在庫状態,アイテムマスタ.区分１,アイテムマスタ.区分２" & vbLf
-        QueryComm &= "FROM アイテムトラン" & vbLf
-        QueryComm &= "INNER JOIN アイテムマスタ" & vbLf
-        QueryComm &= "ON アイテムトラン.種類番号 = アイテムマスタ.種類番号" & vbLf
-        QueryComm &= "WHERE アイテムトラン.種類番号" & vbLf
-        QueryComm &= "IN 2"
-
-        Query4_3 = QueryComm
-
-    End Function
-
-    Public Shared Function Query4_4() As String
-
-        Dim QueryComm As String = Nothing
-
-        QueryComm &= "SELECT *" & vbLf
-        QueryComm &= "FROM アイテムトラン" & vbLf
-        QueryComm &= "INNER JOIN アイテムマスタ" & vbLf
-        QueryComm &= "ON アイテムトラン.種類番号 = アイテムマスタ.種類番号" & vbLf
-        QueryComm &= "INNER JOIN 売場マスタ" & vbLf
-        QueryComm &= "ON アイテムトラン.売場番号 = 売場マスタ.売場番号" & vbLf
-        QueryComm &= "WHERE アイテムマスタ.区分１" & vbLf
-        QueryComm &= "IS NOT NULL"
-
-        Query4_4 = QueryComm
-
-    End Function
-
-    Public Shared Function Query4_5() As String
-
-        Dim QueryComm As String = Nothing
-
-        QueryComm &= "SELECT *" & vbLf
-        QueryComm &= "FROM アイテムトラン" & vbLf
-        QueryComm &= "LEFT JOIN 売場マスタ" & vbLf
-        QueryComm &= "ON アイテムトラン.売場番号 = 売場マスタ.売場番号"
-
-        Query4_5 = QueryComm
-
-    End Function
-
-    Public Shared Function Query4_6() As String
-
-        Dim QueryComm As String = Nothing
-
-        QueryComm &= "SELECT *" & vbLf
-        QueryComm &= "FROM アイテムトラン" & vbLf
-        QueryComm &= "LEFT JOIN アイテムマスタ" & vbLf
-        QueryComm &= "ON アイテムトラン.種類番号 = アイテムマスタ.種類番号"
-
-        Query4_6 = QueryComm
-
-    End Function
-
-    Public Shared Function Query4_7() As String
-
-        Dim QueryComm As String = Nothing
-
-        QueryComm &= "INSERT INTO アイテムマスタ" & vbLf
-        QueryComm &= "SELECT アイテムトラン.種類番号,'ハム',アイテムマスタ.在庫状態,アイテムマスタ.区分１,アイテムマスタ.区分２" & vbLf
-        QueryComm &= "FROM アイテムトラン" & vbLf
-        QueryComm &= "LEFT JOIN アイテムマスタ" & vbLf
-        QueryComm &= "ON アイテムトラン.種類番号 = アイテムマスタ.種類番号" & vbLf
-        QueryComm &= "WHERE アイテムトラン.種類番号" & vbLf
-        QueryComm &= "IN 2"
-
-        Query4_7 = QueryComm
-
-    End Function
-
-    Public Shared Function Query4_8() As String
-
-        Dim QueryComm As String = Nothing
-
-        QueryComm &= "SELECT *" & vbLf
-        QueryComm &= "FROM アイテムトラン" & vbLf
-        QueryComm &= "LEFT JOIN アイテムマスタ" & vbLf
-        QueryComm &= "ON アイテムトラン.種類番号 = アイテムマスタ.種類番号" & vbLf
-        QueryComm &= "LEFT JOIN 売場マスタ" & vbLf
-        QueryComm &= "ON アイテムトラン.売場番号 = 売場マスタ.売場番号" & vbLf
-        QueryComm &= "WHERE アイテムマスタ.区分１" & vbLf
-        QueryComm &= "IS NOT NULL"
-
-        Query4_8 = QueryComm
-
-    End Function
-
-    Public Shared Function Query4_9() As String
-
-        Dim QueryComm As String = Nothing
-
-        QueryComm &= "SELECT アイテムトラン.種類番号," & vbLf
-        QueryComm &= "CASE アイテムマスタ.在庫状態" & vbLf
-        QueryComm &= "WHEN 'A' THEN '在庫あり'" & vbLf
-        QueryComm &= "WHEN 'B' THEN '予約注文'" & vbLf
-        QueryComm &= "WHEN 'C' THEN '在庫なし'" & vbLf
-        QueryComm &= "ELSE '未定' END" & vbLf
-        QueryComm &= "FROM アイテムトラン" & vbLf
-        QueryComm &= "INNER JOIN アイテムマスタ" & vbLf
-        QueryComm &= "ON アイテムトラン.種類番号 = アイテムマスタ.種類番号"
-
-        Query4_9 = QueryComm
-
-    End Function
-
-    '回答文　課題⑤
-    Public Shared Function Query5_1() As String
-
-        Dim QueryComm As String = Nothing
-
-        QueryComm &= "CREATE TABLE USER_MASTER" & vbLf
-        QueryComm &= "(" & vbLf
-        QueryComm &= "USER_ID      VARCHAR2(8) NOT NULL PRIMARY KEY," & vbLf
-        QueryComm &= "DEPT_NO      VARCHAR2(8)," & vbLf
-        QueryComm &= "USER_NAME    VARCHAR2(32)," & vbLf
-        QueryComm &= "CREATED_ON   DATE DEFAULT SYSDATE," & vbLf
-        QueryComm &= "MODIFIED_ON  DATE" & vbLf
-        QueryComm &= ")"
-
-        Query5_1 = QueryComm
-
-    End Function
-
-    '回答文　課題⑥
-    Public Shared Function Query6_1() As String
-
-        Dim QueryComm As String = Nothing
-
-        QueryComm &= "SELECT 階数," & vbLf
-        QueryComm &= "LISTAGG(売場, ',') WITHIN GROUP (ORDER BY 連番) 売場リスト" & vbLf
-        QueryComm &= "FROM 売場階数トラン" & vbLf
-        QueryComm &= "GROUP BY 階数"
-
-        Query6_1 = QueryComm
-
-    End Function
-
 
 End Class
 
