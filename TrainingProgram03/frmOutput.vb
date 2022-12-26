@@ -56,12 +56,16 @@ Public Class formOutput
         grbKadai1_7.Visible = False
         grbKadai2_1.Visible = False
 
-        Dim strGrb As Control() = Me.Controls.Find(Forms.grbOpen(Task.cboSelected(cboKadai1.SelectedIndex, cboKadai2.SelectedIndex)), True)
-        If strGrb.Length > 0 Then
-            CType(strGrb(0), GroupBox).Visible = True
-        End If
+        If cboKadai1.Text <> "課題PL/SQL" Then
 
-        CType(strGrb(0), GroupBox).Location = New Point(40, 170)
+            Dim strGrb As Control() = Me.Controls.Find(Forms.grbOpen(Task.cboSelected(cboKadai1.SelectedIndex, cboKadai2.SelectedIndex)), True)
+            If strGrb.Length > 0 Then
+                CType(strGrb(0), GroupBox).Visible = True
+            End If
+
+            CType(strGrb(0), GroupBox).Location = New Point(40, 170)
+
+        End If
     End Sub
 
     '出力ボタン押下時
