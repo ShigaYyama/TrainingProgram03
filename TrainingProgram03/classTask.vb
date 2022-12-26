@@ -157,8 +157,12 @@ Public Class Task
 
         QueryComm &= "SELECT 氏名,連絡先１ AS 連絡先" & vbLf
         QueryComm &= "FROM 顧客マスタ" & vbLf
+        QueryComm &= "WHERE 顧客番号" & vbLf
+        QueryComm &= "BETWEEN '" & minNum & "' AND '" & maxNum & "'" & vbLf
         QueryComm &= "UNION SELECT 氏名,連絡先２ AS 連絡先" & vbLf
-        QueryComm &= "FROM 顧客マスタ"
+        QueryComm &= "FROM 顧客マスタ" & vbLf
+        QueryComm &= "WHERE 顧客番号" & vbLf
+        QueryComm &= "BETWEEN '" & minNum & "' AND '" & maxNum & "'"
 
         Query1_5 = QueryComm
 
