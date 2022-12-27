@@ -107,9 +107,9 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="classApp.vb" />
+    <Compile Include="classAppSys.vb" />
     <Compile Include="classDataBase.vb" />
-    <Compile Include="classForms.vb" />
+    <Compile Include="classGroups.vb" />
     <Compile Include="classTask.vb" />
     <Compile Include="Form1.Designer.vb">
       <DependentUpon>Form1.vb</DependentUpon>

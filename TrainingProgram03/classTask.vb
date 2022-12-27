@@ -8,35 +8,52 @@ Imports Microsoft.Office.Interop.Excel
 Public Class Task
 
     '配列：課題シート名
-    Public Shared ArryTask() As String = {"課題1", "課題2", "課題PL/SQL"}
+    Public Shared arryTask() As String = {"課題1", "課題2", "課題PL/SQL"}
 
     '配列：課題シート名
-    Shared ArrySubTask1() As String = {"問題1", "問題2", "問題3", "問題4", "問題5", "問題6", "問題7"}
+    Shared arrySubTask() As String = {"問題1", "問題2", "問題3", "問題4", "問題5", "問題6", "問題7"}
 
+    '回答文：PL/SQLプロシージャ
+    Public Shared ansStored As String = "RPG002"
+
+
+    'コンボボックス1に入れる値を配列で格納
+    Public Shared Sub cbo1SelectItem()
+
+        For Each cbo1Items In arryTask
+            formOutput.cboKadai1.Items.Add(cbo1Items)
+        Next
+
+    End Sub
 
     'コンボボックス2に入れる値を配列で格納(コンボボックス1の値で条件分岐する条件式)
-    Public Shared Function cbo2SetItems(cbo1 As String) As String()
+    Public Shared Sub cbo2SetItems(cbo1 As String)
 
         Dim cbo2 As String() = Nothing
 
         Select Case cbo1
 
-            Case ArryTask(0)
-                cbo2 = ArrySubTask1
+            Case arryTask(0)
+                cbo2 = arrySubTask
 
-            Case ArryTask(1)
-                cbo2 = ArrySubTask1.Take(1).ToArray
+            Case arryTask(1)
+                cbo2 = arrySubTask.Take(1).ToArray
 
-            Case ArryTask(2)
-                cbo2 = ArrySubTask1.Take(1).ToArray
+            Case arryTask(2)
+                cbo2 = arrySubTask.Take(1).ToArray
 
             Case Else
 
         End Select
 
-        Return cbo2
+        '選択されたコンボボックス（cboKadai1）のシートに内にある問題の一覧を、コンボボックス（cboKadai2）に設定
+        formOutput.cboKadai2.Items.Clear()
 
-    End Function
+        For Each cbo2Items In cbo2
+            formOutput.cboKadai2.Items.Add(cbo2Items)
+        Next
+
+    End Sub
 
     'SQL文を返すための値設定
     Public Shared Function cboSelected(cbo1Index As Integer, cbo2Index As Integer) As Integer
@@ -93,6 +110,7 @@ Public Class Task
                 Else
                     strOrder = "DESC"
                 End If
+
                 oraComm &= "SELECT DISTINCT 顧客マスタ.顧客番号,顧客マスタ.氏名" & vbLf
                 oraComm &= "FROM 顧客マスタ" & vbLf
                 oraComm &= "INNER JOIN 売場トラン" & vbLf
@@ -276,8 +294,7 @@ Public Class Task
             '回答文　課題PLSQL
             Case 20
 
-                oraComm = "RPG002"
-
+                oraComm = ansStored
 
         End Select
 
