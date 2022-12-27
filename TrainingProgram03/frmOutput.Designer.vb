@@ -98,7 +98,7 @@ Partial Class formOutput
         '
         'btnOutput
         '
-        Me.btnOutput.Location = New System.Drawing.Point(563, 595)
+        Me.btnOutput.Location = New System.Drawing.Point(270, 571)
         Me.btnOutput.Name = "btnOutput"
         Me.btnOutput.Size = New System.Drawing.Size(125, 40)
         Me.btnOutput.TabIndex = 3
@@ -107,7 +107,7 @@ Partial Class formOutput
         '
         'btnClose
         '
-        Me.btnClose.Location = New System.Drawing.Point(735, 595)
+        Me.btnClose.Location = New System.Drawing.Point(435, 571)
         Me.btnClose.Name = "btnClose"
         Me.btnClose.Size = New System.Drawing.Size(125, 40)
         Me.btnClose.TabIndex = 4
@@ -450,7 +450,7 @@ Partial Class formOutput
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(10.0!, 18.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(878, 651)
+        Me.ClientSize = New System.Drawing.Size(659, 651)
         Me.Controls.Add(Me.grbKadai2_1)
         Me.Controls.Add(Me.grbKadai1_7)
         Me.Controls.Add(Me.grbKadai1_6)

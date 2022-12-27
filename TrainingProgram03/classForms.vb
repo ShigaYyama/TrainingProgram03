@@ -2,9 +2,6 @@
 
     Public Shared Sub grbInvisible(groupBox As GroupBox)
 
-
-
-
         groupBox.Visible = False
 
     End Sub

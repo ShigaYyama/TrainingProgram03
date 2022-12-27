@@ -11,7 +11,7 @@
             MessageBox.Show("2重起動確認完了。問題ありません。")
         Else
 
-            MessageBox.Show("既にアプリケーションが起動しています。")
+            MessageBox.Show("既にアプリケーションが起動しています。", "アプリケーション2重起動", MessageBoxButtons.OK, MessageBoxIcon.Error)
             Application.Exit()
         End If
 
