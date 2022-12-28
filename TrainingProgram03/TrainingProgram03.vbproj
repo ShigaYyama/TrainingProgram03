@@ -109,14 +109,7 @@
   <ItemGroup>
     <Compile Include="classAppSys.vb" />
     <Compile Include="classDataBase.vb" />
-    <Compile Include="classGroups.vb" />
     <Compile Include="classTask.vb" />
-    <Compile Include="Form1.Designer.vb">
-      <DependentUpon>Form1.vb</DependentUpon>
-    </Compile>
-    <Compile Include="Form1.vb">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="frmOutput.vb">
       <SubType>Form</SubType>
     </Compile>
@@ -142,9 +135,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.vb</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="frmOutput.resx">
       <DependentUpon>frmOutput.vb</DependentUpon>
     </EmbeddedResource>
