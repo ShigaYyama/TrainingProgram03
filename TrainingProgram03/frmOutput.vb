@@ -1,4 +1,5 @@
-﻿Imports System.Threading
+﻿Imports System.Data.SqlClient
+Imports System.Threading
 
 Public Class formOutput
 
@@ -6,7 +7,7 @@ Public Class formOutput
     'アプリケーション起動時
     Private Sub formOutput_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
-        'アプリケーションの2重起動確認
+        'アプリケーションの2重起動確認（ミューテックス生成）
         AppSys.duplicateCheck()
 
         'データベース接続確認
@@ -60,24 +61,26 @@ Public Class formOutput
 
         '課題に対応したSQL文を取り出し、フォームコントロールに対応してSQLを組み立てる
         Dim str As String = Nothing
-        Dim ansQuery As String
+        Dim query1 As String = Nothing
+        Dim query2 As String = Nothing
+        Dim query3 As String = Nothing
+
         'エラーをキャッチしたら、Boolean判別にて処理を中断
-        If queryCreate(cboKadai1.SelectedIndex, cboKadai2.SelectedIndex, str) = False Then
+        If queryCreate(cboKadai1.SelectedIndex, cboKadai2.SelectedIndex, str, query1, query2, query3) = False Then
             Exit Sub
-        Else
-            ansQuery = str
+
         End If
 
         'データベースに接続してエクセル出力
-        DataBase.outPut(ansQuery)
+        DataBase.outPut(str, query1, query2, query3)
 
     End Sub
 
     '終了ボタン押下時
     Private Sub btnClose_Click(sender As Object, e As EventArgs) Handles btnClose.Click
 
-        'アプリケーション終了
-        Application.Exit()
+        'ミューテックスを解放してフォームを閉じる
+        AppSys.systemExit()
 
     End Sub
 
@@ -165,7 +168,7 @@ Public Class formOutput
 
 
     'SQL文
-    Public Shared Function queryCreate(cbo1 As String, cbo2 As String, ByRef ansStr As String) As Boolean
+    Public Shared Function queryCreate(cbo1 As String, cbo2 As String, ByRef ansStr As String, ByRef ansQuery1 As String, ByRef ansQuery2 As String, ByRef ansQuery3 As String) As Boolean
 
         queryCreate = False
         Dim oraComm As String = Nothing
@@ -201,9 +204,12 @@ Public Class formOutput
                 oraComm &= "FROM 顧客マスタ" & vbLf
                 oraComm &= "INNER JOIN 売場トラン" & vbLf
                 oraComm &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
-                oraComm &= "WHERE 売場トラン.売上金額>= " & formOutput.txtUriage1_1.Text & vbLf
-                oraComm &= "ORDER BY 顧客マスタ.顧客番号 " & strOrder
+                oraComm &= "WHERE 売場トラン.売上金額>= :ANS1" & vbLf
+                oraComm &= "ORDER BY 顧客マスタ.顧客番号 :ANS2"
 
+                ansQuery1 = formOutput.txtUriage1_1.Text
+                ansQuery2 = strOrder
+                ansQuery3 = ""
 
             '回答文　課題1-2
             Case 1
@@ -229,8 +235,11 @@ Public Class formOutput
                 oraComm &= "INNER JOIN 顧客マスタ" & vbLf
                 oraComm &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
                 oraComm &= "GROUP BY 顧客マスタ.性別" & vbLf
-                oraComm &= "HAVING 顧客マスタ.性別 IN ( " & strGender & " )"
+                oraComm &= "HAVING 顧客マスタ.性別 IN ( :ANS1 )"
 
+                ansQuery1 = strGender
+                ansQuery2 = ""
+                ansQuery3 = ""
 
             '回答文　課題1-3
             Case 2

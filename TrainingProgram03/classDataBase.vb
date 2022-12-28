@@ -32,10 +32,17 @@ Public Class DataBase
 
 
     'SQLの結果をエクセル出力(通常SQL文)
-    Public Shared Sub outPut(oraObje As String)
+    Public Shared Sub outPut(oraObje As String, query1 As String, query2 As String, query3 As String)
 
         'SQL文を実行
         Using oraComm As OracleCommand = New OracleCommand(oraObje, conn)
+
+            oraComm.CommandType = CommandType.Text
+
+            oraComm.BindByName = True
+            oraComm.Parameters.Add(New OracleParameter(":ANS1", OracleDbType.Varchar2)).Value = query1
+            oraComm.Parameters.Add(New OracleParameter(":ANS2", OracleDbType.Varchar2)).Value = query2
+            oraComm.Parameters.Add(New OracleParameter(":ANS3", OracleDbType.Varchar2)).Value = query3
 
             Using oraAdap As New OracleDataAdapter(oraComm)
 
