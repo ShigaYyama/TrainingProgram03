@@ -31,6 +31,8 @@ Public Class DataBase
     End Sub
 
 
+    '！！！！！SQL実行文はまだ未完成です。Parameters.Addが正常作動していない状態です。！！！！！
+
     'SQLの結果をエクセル出力(通常SQL文)
     Public Shared Sub outPut(oraObje As String, query1 As String, query2 As String, query3 As String)
 
