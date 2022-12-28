@@ -166,7 +166,7 @@ Public Class formOutput
 
     End Sub
 
-    '！！！！！SQL実行文はまだ未完成です。Parameters.Addが正常作動していない状態です。！！！！！
+
 
     'SQL文
     Public Shared Function queryCreate(cbo1 As String, cbo2 As String, ByRef ansStr As String, ByRef ansQuery1 As String, ByRef ansQuery2 As String, ByRef ansQuery3 As String) As Boolean
