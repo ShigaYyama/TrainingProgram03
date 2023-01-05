@@ -1,4 +1,5 @@
-﻿Imports System.Threading
+﻿Imports System.Data.SqlClient
+Imports System.Threading
 Imports Microsoft.Office.Interop
 Imports Oracle.ManagedDataAccess.Client
 
@@ -32,89 +33,72 @@ Public Class DataBase
 
 
     'SQLの結果をエクセル出力(通常SQL文)
-    Public Shared Sub outPut(oraObje As String, query1 As String, query2 As String, query3 As String)
+    Public Shared Sub outPut(dTable As DataTable)
 
-        'SQL文を実行
-        Using oraComm As OracleCommand = New OracleCommand(oraObje, conn)
+        'エクセル用の変数設定
+        Dim excelApp As New Excel.Application()
+        Dim excelBooksOpen As Excel.Workbooks = excelApp.Workbooks
+        Dim excelBook As Excel.Workbook = excelBooksOpen.Add()
+        Dim oraSheet As Excel.Worksheet = CType(excelApp.Worksheets("sheet1"), Excel.Worksheet)
 
-            oraComm.CommandType = CommandType.Text
+        Try
 
-            oraComm.BindByName = True
-            oraComm.Parameters.Add(New OracleParameter(":ANS1", OracleDbType.Varchar2)).Value = query1
-            oraComm.Parameters.Add(New OracleParameter(":ANS2", OracleDbType.Varchar2)).Value = query2
-            oraComm.Parameters.Add(New OracleParameter(":ANS3", OracleDbType.Varchar2)).Value = query3
+            '保存用のダイアログ表示
+            Using dialog As New SaveFileDialog()
 
-            Using oraAdap As New OracleDataAdapter(oraComm)
+                Dim ret As DialogResult
+                dialog.Title = "出力データの保存先を選択"
+                dialog.Filter = "EXCELファイル|*.xlsx"
+                ret = dialog.ShowDialog()
 
-                'Oracleをエクセル出力用に読み込む
-                Using oraRead As OracleDataReader = oraComm.ExecuteReader()
+                If ret = DialogResult.OK Then
 
-                    Dim dSet As DataSet = New DataSet()
-                    Dim dTable As DataTable
+                    Dim filePath As String = dialog.FileName
 
-                    'SQL出力結果をデータテーブルに出力
-                    oraAdap.Fill(dSet, "ExportDataTable")
-                    dTable = dSet.Tables("ExportDataTable")
+                    '出力先のエクセルのセル番号 = データテーブルの座標にセット
+                    'Forで行と列を繰り返して値を取得
+                    For x As Integer = 0 To dTable.Columns.Count - 1
+                        oraSheet.Cells(1, 1 + x) = dTable.Columns(x).ColumnName
+                    Next
 
-                    'エクセル用の変数設定
-                    Dim excelApp As New Excel.Application()
-                    Dim excelBooksOpen As Excel.Workbooks = excelApp.Workbooks
-                    Dim excelBook As Excel.Workbook = excelBooksOpen.Add()
-                    Dim oraSheet As Excel.Worksheet = CType(excelApp.Worksheets("sheet1"), Excel.Worksheet)
+                    For x As Integer = 0 To dTable.Rows.Count - 1
+                        For y As Integer = 0 To dTable.Columns.Count - 1
+                            oraSheet.Cells(2 + x, 1 + y) = dTable.Rows(x).Item(y).ToString
+                        Next
+                    Next
 
-                    Try
+                    excelBook.SaveAs(filePath)
 
-                        '保存用のダイアログ表示
-                        Using dialog As New SaveFileDialog()
+                Else
+                    MessageBox.Show("処理がキャンセルされました。")
+                    Exit Sub
 
-                            Dim ret As DialogResult
-                            dialog.Title = "出力データの保存先を選択"
-                            dialog.Filter = "EXCELファイル|*.xlsx"
-                            ret = dialog.ShowDialog()
+                End If
+                MessageBox.Show("書き込みが完了しました。")
 
-                            If ret = DialogResult.OK Then
-
-                                Dim filePath As String = dialog.FileName
-
-                                '出力先のエクセルのセル番号 = データテーブルの座標にセット
-                                'Forで行と列を繰り返して値を取得
-                                For x As Integer = 0 To dTable.Columns.Count - 1
-                                    oraSheet.Cells(1, 1 + x) = dTable.Columns(x).ColumnName
-                                Next
-
-                                For x As Integer = 0 To dTable.Rows.Count - 1
-                                    For y As Integer = 0 To dTable.Columns.Count - 1
-                                        oraSheet.Cells(2 + x, 1 + y) = dTable.Rows(x).Item(y).ToString
-                                    Next
-                                Next
-
-                                excelBook.SaveAs(filePath)
-
-                            Else
-                                MessageBox.Show("処理がキャンセルされました。")
-                                Exit Sub
-
-                            End If
-                            MessageBox.Show("書き込みが完了しました。")
-
-                        End Using
-
-                    Catch ex As Exception
-                        MessageBox.Show(ex.Message)
-
-                    Finally
-                        excelApp.Quit()
-                        Call System.Runtime.InteropServices.Marshal.ReleaseComObject(oraSheet)
-                        Call System.Runtime.InteropServices.Marshal.ReleaseComObject(excelBook)
-                        Call System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApp)
-
-                    End Try
-
-                End Using
             End Using
-        End Using
+
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+
+        Finally
+            excelApp.Quit()
+            Call System.Runtime.InteropServices.Marshal.ReleaseComObject(oraSheet)
+            Call System.Runtime.InteropServices.Marshal.ReleaseComObject(excelBook)
+            Call System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApp)
+
+        End Try
 
     End Sub
+
+    Public Shared Function getOraCommand(strQuery As String) As OracleCommand
+
+        Dim oraComm As OracleCommand = New OracleCommand(strQuery, conn)
+
+        oraComm.CommandType = CommandType.Text
+
+        Return oraComm
+    End Function
 
 
     'ストアドプロシージャ実行のみのファンクション

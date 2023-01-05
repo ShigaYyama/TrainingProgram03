@@ -1,5 +1,7 @@
 ﻿Imports System.Data.SqlClient
 Imports System.Threading
+Imports Microsoft.Office.Interop
+Imports Oracle.ManagedDataAccess.Client
 
 Public Class formOutput
 
@@ -23,10 +25,10 @@ Public Class formOutput
 
 
         '課題1-3,1-6のリストボックスに値を設定しておく
-        Dim addArray As String() = {"食品", "紳士服", "婦人服", "レストラン", "化粧品"}
+        Dim addItemArray As String() = {"食品", "紳士服", "婦人服", "レストラン", "化粧品"}
 
-        ltbSalseFloor1_3.Items.AddRange(addArray)
-        ltbSalesFloor1_6.Items.AddRange(addArray)
+        ltbSalseFloor1_3.Items.AddRange(addItemArray)
+        ltbSalesFloor1_6.Items.AddRange(addItemArray)
 
     End Sub
 
@@ -60,19 +62,16 @@ Public Class formOutput
     Private Sub btnOutput_Click(sender As Object, e As EventArgs) Handles btnOutput.Click
 
         '課題に対応したSQL文を取り出し、フォームコントロールに対応してSQLを組み立てる
-        Dim str As String = Nothing
-        Dim query1 As String = Nothing
-        Dim query2 As String = Nothing
-        Dim query3 As String = Nothing
+        Dim ansQuery As DataTable = Nothing
 
         'エラーをキャッチしたら、Boolean判別にて処理を中断
-        If queryCreate(cboKadai1.SelectedIndex, cboKadai2.SelectedIndex, str, query1, query2, query3) = False Then
+        If queryCreate(cboKadai1.SelectedIndex, cboKadai2.SelectedIndex, ansQuery) = False Then
             Exit Sub
 
         End If
 
         'データベースに接続してエクセル出力
-        DataBase.outPut(str, query1, query2, query3)
+        DataBase.outPut(ansQuery)
 
     End Sub
 
@@ -111,7 +110,7 @@ Public Class formOutput
 
 
     '適したグループボックスを表示
-    Public Shared Sub grbOpen(cbo1 As Integer, cbo2 As Integer)
+    Private Sub grbOpen(cbo1 As Integer, cbo2 As Integer)
 
         'コンボボックス1, コンボボックス2の値で、個別に割り振られた値を取得
         '(TaskクラスのcboSelectedを呼び出す)
@@ -155,7 +154,7 @@ Public Class formOutput
         'コンボボックス1の値が空で無ければ、グループボックスを表示する
         If strGrb <> "" Then
 
-            Dim searchGrb As Control() = formOutput.Controls.Find(strGrb, True)
+            Dim searchGrb As Control() = Me.Controls.Find(strGrb, True)
             If searchGrb.Length > 0 Then
                 CType(searchGrb(0), GroupBox).Visible = True
 
@@ -169,10 +168,13 @@ Public Class formOutput
 
 
     'SQL文
-    Public Shared Function queryCreate(cbo1 As String, cbo2 As String, ByRef ansStr As String, ByRef ansQuery1 As String, ByRef ansQuery2 As String, ByRef ansQuery3 As String) As Boolean
-
+    Private Function queryCreate(cbo1 As String, cbo2 As String, ByRef ansQuery As DataTable) As Boolean
         queryCreate = False
-        Dim oraComm As String = Nothing
+
+        Dim strQuery As String = Nothing
+        Dim strCommand As OracleCommand = Nothing
+
+        Dim dTable As DataTable = Nothing
 
         'コンボボックス1,2の値で返した数値によって条件分岐
         Select Case Task.cboSelected(cbo1, cbo2)
@@ -182,104 +184,110 @@ Public Class formOutput
 
                 '例外処理：売上に、数値以外を入力した場合
                 Dim i As Integer
-                If Not Integer.TryParse(formOutput.txtUriage1_1.Text, i) Then
+                If Not Integer.TryParse(Me.txtUriage1_1.Text, i) Then
                     MessageBox.Show("数値を入力してください", "帳票出力", MessageBoxButtons.OK, MessageBoxIcon.Error)
                     Return False
                 End If
 
                 '例外処理：順序が選択されていない場合
-                If formOutput.rbtJunjoAsc1_1.Checked = False And formOutput.rbtJunjoDesc1_1.Checked = False Then
+                If Me.rbtJunjoAsc1_1.Checked = False And Me.rbtJunjoDesc1_1.Checked = False Then
                     MessageBox.Show("昇順又は降順を選択してください", "帳票出力", MessageBoxButtons.OK, MessageBoxIcon.Error)
                     Return False
                 End If
 
                 '処理内容
                 Dim strOrder As String
-                If formOutput.rbtJunjoAsc1_1.Checked = True Then
+                If Me.rbtJunjoAsc1_1.Checked = True Then
                     strOrder = "ASC"
                 Else
                     strOrder = "DESC"
                 End If
 
-                oraComm &= "SELECT DISTINCT 顧客マスタ.顧客番号,顧客マスタ.氏名" & vbLf
-                oraComm &= "FROM 顧客マスタ" & vbLf
-                oraComm &= "INNER JOIN 売場トラン" & vbLf
-                oraComm &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
-                oraComm &= "WHERE 売場トラン.売上金額>= :ANS1" & vbLf
-                oraComm &= "ORDER BY 顧客マスタ.顧客番号 :ANS2"
+                strQuery &= "SELECT DISTINCT 顧客マスタ.顧客番号,顧客マスタ.氏名" & vbLf
+                strQuery &= "FROM 顧客マスタ" & vbLf
+                strQuery &= "INNER JOIN 売場トラン" & vbLf
+                strQuery &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
+                strQuery &= "WHERE 売場トラン.売上金額>= :ANS1" & vbLf
+                strQuery &= "ORDER BY 顧客マスタ.顧客番号 " & strOrder
 
-                ansQuery1 = formOutput.txtUriage1_1.Text
-                ansQuery2 = strOrder
-                ansQuery3 = ""
+                strCommand = DataBase.getOraCommand(strQuery)
+                strCommand.CommandType = CommandType.Text
+
+                strCommand.BindByName = True
+                strCommand.Parameters.Add(New OracleParameter(":ANS1", OracleDbType.Varchar2)).Value = Me.txtUriage1_1.Text
 
             '回答文　課題1-2
             Case 1
 
                 '例外処理：性別がいずれも選択されていない場合
-                If formOutput.rbtSexM1_2.Checked = False And formOutput.rbtSexF1_2.Checked = False And formOutput.rbtSexMF1_2.Checked = False Then
+                If Me.rbtSexM1_2.Checked = False And Me.rbtSexF1_2.Checked = False And Me.rbtSexMF1_2.Checked = False Then
                     MessageBox.Show("性別を選択してください", "帳票出力", MessageBoxButtons.OK, MessageBoxIcon.Error)
                     Return False
                 End If
 
                 '処理内容
                 Dim strGender As String
-                If formOutput.rbtSexM1_2.Checked = True Then
+                If Me.rbtSexM1_2.Checked = True Then
                     strGender = "'男'"
-                ElseIf formOutput.rbtSexF1_2.Checked = True Then
+                ElseIf Me.rbtSexF1_2.Checked = True Then
                     strGender = "'女'"
                 Else
                     strGender = "'男','女'"
                 End If
 
-                oraComm &= "SELECT 顧客マスタ.性別,SUM(売場トラン.売上金額)AS 売上金額合計" & vbLf
-                oraComm &= "FROM 売場トラン" & vbLf
-                oraComm &= "INNER JOIN 顧客マスタ" & vbLf
-                oraComm &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
-                oraComm &= "GROUP BY 顧客マスタ.性別" & vbLf
-                oraComm &= "HAVING 顧客マスタ.性別 IN ( :ANS1 )"
+                strQuery &= "SELECT 顧客マスタ.性別,SUM(売場トラン.売上金額)AS 売上金額合計" & vbLf
+                strQuery &= "FROM 売場トラン" & vbLf
+                strQuery &= "INNER JOIN 顧客マスタ" & vbLf
+                strQuery &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
+                strQuery &= "GROUP BY 顧客マスタ.性別" & vbLf
+                strQuery &= "HAVING 顧客マスタ.性別 IN " & strGender
 
-                ansQuery1 = strGender
-                ansQuery2 = ""
-                ansQuery3 = ""
+                strCommand = DataBase.getOraCommand(strQuery)
+                strCommand.CommandType = CommandType.Text
 
             '回答文　課題1-3
             Case 2
 
                 '処理内容
                 Dim strArea As String
-                strArea = formOutput.ltbSalseFloor1_3.SelectedItem
+                strArea = Me.ltbSalseFloor1_3.SelectedItem
 
-                oraComm &= "SELECT 顧客マスタ.氏名" & vbLf
-                oraComm &= "FROM 顧客マスタ" & vbLf
-                oraComm &= "INNER JOIN 売場トラン" & vbLf
-                oraComm &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
-                oraComm &= "WHERE 売場トラン.売場 = '" & strArea & "'" & vbLf
-                oraComm &= "GROUP BY 顧客マスタ.氏名"
+                strQuery &= "SELECT 顧客マスタ.氏名" & vbLf
+                strQuery &= "FROM 顧客マスタ" & vbLf
+                strQuery &= "INNER JOIN 売場トラン" & vbLf
+                strQuery &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
+                strQuery &= "WHERE 売場トラン.売場 = '" & strArea & "'" & vbLf
+                strQuery &= "GROUP BY 顧客マスタ.氏名"
 
+                strCommand = DataBase.getOraCommand(strQuery)
+                strCommand.CommandType = CommandType.Text
 
             '回答文　課題1-4
             Case 3
 
                 '例外処理：順序が選択されていない場合
-                If formOutput.rbtJunjoAsc1_4.Checked = False And formOutput.rbtJunjoDesc1_4.Checked = False Then
+                If Me.rbtJunjoAsc1_4.Checked = False And Me.rbtJunjoDesc1_4.Checked = False Then
                     MessageBox.Show("昇順又は降順を選択してください", "帳票出力", MessageBoxButtons.OK, MessageBoxIcon.Error)
                     Return False
                 End If
 
                 '処理内容
-                Dim intDay As Integer
-                intDay = CInt(formOutput.dtpBirthday1_4.Value.ToString("yyyyMMdd"))
-
                 Dim strOrder As String
-                If formOutput.rbtJunjoAsc1_1.Checked = True Then
+                If Me.rbtJunjoAsc1_1.Checked = True Then
                     strOrder = "ASC"
                 Else
                     strOrder = "DESC"
                 End If
 
-                oraComm &= "SELECT 氏名,TRUNC((" & intDay & " - TO_CHAR(生年月日, 'YYYYMMDD')) /10000, 0) AS 年齢" & vbLf
-                oraComm &= "FROM 顧客マスタ" & vbLf
-                oraComm &= "ORDER BY 顧客番号 " & strOrder
+                strQuery &= "SELECT 氏名,TRUNC(( :ANS1 - TO_CHAR(生年月日, 'YYYYMMDD')) /10000, 0) AS 年齢" & vbLf
+                strQuery &= "FROM 顧客マスタ" & vbLf
+                strQuery &= "ORDER BY 顧客番号 " & strOrder
+
+                strCommand = DataBase.getOraCommand(strQuery)
+                strCommand.CommandType = CommandType.Text
+
+                strCommand.BindByName = True
+                strCommand.Parameters.Add(New OracleParameter(":ANS1", OracleDbType.Decimal)).Value = CInt(Me.dtpBirthday1_4.Value.ToString("yyyyMMdd"))
 
 
             '回答文　課題1-5
@@ -287,7 +295,7 @@ Public Class formOutput
 
                 '例外処理：Noに、数値以外を入力した場合
                 Dim i As Integer
-                If Integer.TryParse(formOutput.txtNumberFrom1_5.Text, i) = False Or Integer.TryParse(formOutput.txtNumberTo1_5.Text, i) = False Then
+                If Integer.TryParse(Me.txtNumberFrom1_5.Text, i) = False Or Integer.TryParse(Me.txtNumberTo1_5.Text, i) = False Then
                     MessageBox.Show("数値を入力してください", "帳票出力", MessageBoxButtons.OK, MessageBoxIcon.Error)
                     Return False
                 End If
@@ -295,60 +303,68 @@ Public Class formOutput
                 '例外処理：Noに、数値以外を入力した場合
                 Dim minNum As Integer = 10000
                 Dim maxNum As Integer = 99999
-                If CInt(formOutput.txtNumberFrom1_5.Text) < minNum Or CInt(formOutput.txtNumberFrom1_5.Text) > maxNum Then
+                If CInt(Me.txtNumberFrom1_5.Text) < minNum Or CInt(Me.txtNumberFrom1_5.Text) > maxNum Then
                     MessageBox.Show("数値は" & minNum & "から" & maxNum & "の間で指定してください", "帳票出力", MessageBoxButtons.OK, MessageBoxIcon.Error)
                     Return False
                 End If
 
-                If CInt(formOutput.txtNumberTo1_5.Text) < minNum Or CInt(formOutput.txtNumberTo1_5.Text) > maxNum Then
+                If CInt(Me.txtNumberTo1_5.Text) < minNum Or CInt(Me.txtNumberTo1_5.Text) > maxNum Then
                     MessageBox.Show("数値は" & minNum & "から" & maxNum & "の間で指定してください", "帳票出力", MessageBoxButtons.OK, MessageBoxIcon.Error)
                     Return False
                 End If
 
                 '処理内容
-                Dim intMin, intMax As Integer
-                intMin = formOutput.txtNumberFrom1_5.Text
-                intMax = formOutput.txtNumberTo1_5.Text
+                strQuery &= "SELECT 氏名,連絡先１ AS 連絡先" & vbLf
+                strQuery &= "FROM 顧客マスタ" & vbLf
+                strQuery &= "WHERE 顧客番号" & vbLf
+                strQuery &= "BETWEEN ':ANS1' AND ':ANS2'" & vbLf
+                strQuery &= "UNION SELECT 氏名,連絡先２ AS 連絡先" & vbLf
+                strQuery &= "FROM 顧客マスタ" & vbLf
+                strQuery &= "WHERE 顧客番号" & vbLf
+                strQuery &= "BETWEEN ':ANS1' AND ':ANS2'"
 
-                oraComm &= "SELECT 氏名,連絡先１ AS 連絡先" & vbLf
-                oraComm &= "FROM 顧客マスタ" & vbLf
-                oraComm &= "WHERE 顧客番号" & vbLf
-                oraComm &= "BETWEEN '" & intMin & "' AND '" & intMax & "'" & vbLf
-                oraComm &= "UNION SELECT 氏名,連絡先２ AS 連絡先" & vbLf
-                oraComm &= "FROM 顧客マスタ" & vbLf
-                oraComm &= "WHERE 顧客番号" & vbLf
-                oraComm &= "BETWEEN '" & intMin & "' AND '" & intMax & "'"
+                strCommand = DataBase.getOraCommand(strQuery)
+                strCommand.CommandType = CommandType.Text
 
+                strCommand.BindByName = True
+                strCommand.Parameters.Add(New OracleParameter(":ANS1", OracleDbType.Decimal)).Value = Me.txtNumberFrom1_5.Text
+                strCommand.Parameters.Add(New OracleParameter(":ANS2", OracleDbType.Decimal)).Value = Me.txtNumberTo1_5.Text
 
             '回答文　課題1-6
             Case 5
 
                 '処理内容
                 Dim strArea As String
-                strArea = formOutput.ltbSalesFloor1_6.SelectedItem
+                strArea = Me.ltbSalesFloor1_6.SelectedItem
 
-                oraComm &= "SELECT 顧客マスタ.氏名,COUNT(売場トラン.売場) AS 回数" & vbLf
-                oraComm &= "FROM 顧客マスタ" & vbLf
-                oraComm &= "LEFT JOIN 売場トラン" & vbLf
-                oraComm &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
-                oraComm &= "AND 売場トラン.売場 IN('" & strArea & "')" & vbLf
-                oraComm &= "GROUP BY 顧客マスタ.氏名"
+                strQuery &= "SELECT 顧客マスタ.氏名,COUNT(売場トラン.売場) AS 回数" & vbLf
+                strQuery &= "FROM 顧客マスタ" & vbLf
+                strQuery &= "LEFT JOIN 売場トラン" & vbLf
+                strQuery &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
+                strQuery &= "AND 売場トラン.売場 IN('" & strArea & "')" & vbLf
+                strQuery &= "GROUP BY 顧客マスタ.氏名"
+
+                strCommand = DataBase.getOraCommand(strQuery)
+                strCommand.CommandType = CommandType.Text
 
 
             '回答文　課題1-7
             Case 6
 
                 '処理内容
-                Dim strName As String
-                strName = formOutput.txtSearch1_7.Text
+                strQuery &= "SELECT 顧客マスタ.氏名,COUNT(売場トラン.売場) AS 回数" & vbLf
+                strQuery &= "FROM 顧客マスタ" & vbLf
+                strQuery &= "LEFT JOIN 売場トラン" & vbLf
+                strQuery &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
+                strQuery &= "AND 売場トラン.売場 IN('レストラン')" & vbLf
+                strQuery &= "WHERE 顧客マスタ.氏名 LIKE '%:ANS1%'" & vbLf
+                strQuery &= "GROUP BY 顧客マスタ.氏名"
 
-                oraComm &= "SELECT 顧客マスタ.氏名,COUNT(売場トラン.売場) AS 回数" & vbLf
-                oraComm &= "FROM 顧客マスタ" & vbLf
-                oraComm &= "LEFT JOIN 売場トラン" & vbLf
-                oraComm &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
-                oraComm &= "AND 売場トラン.売場 IN('レストラン')" & vbLf
-                oraComm &= "WHERE 顧客マスタ.氏名 LIKE '%" & strName & "%'" & vbLf
-                oraComm &= "GROUP BY 顧客マスタ.氏名"
+                strCommand = DataBase.getOraCommand(strQuery)
+                strCommand.CommandType = CommandType.Text
+
+                strCommand.BindByName = True
+                strCommand.Parameters.Add(New OracleParameter(":ANS1", OracleDbType.Varchar2)).Value = Me.txtSearch1_7.Text
 
 
             '回答文　課題2-1
@@ -356,7 +372,7 @@ Public Class formOutput
 
                 '例外処理：Noに、数値以外を入力した場合
                 Dim i As Integer
-                If Integer.TryParse(formOutput.txtNumberFrom2_1.Text, i) = False Or Integer.TryParse(formOutput.txtNumberTo2_1.Text, i) = False Then
+                If Integer.TryParse(Me.txtNumberFrom2_1.Text, i) = False Or Integer.TryParse(Me.txtNumberTo2_1.Text, i) = False Then
                     MessageBox.Show("数値を入力してください", "帳票出力", MessageBoxButtons.OK, MessageBoxIcon.Error)
                     Return False
                 End If
@@ -364,27 +380,30 @@ Public Class formOutput
                 '例外処理：Noに、数値以外を入力した場合
                 Dim minNum As Integer = 10000
                 Dim maxNum As Integer = 99999
-                If CInt(formOutput.txtNumberFrom2_1.Text) < minNum Or CInt(formOutput.txtNumberFrom2_1.Text) > maxNum Then
+                If CInt(Me.txtNumberFrom2_1.Text) < minNum Or CInt(Me.txtNumberFrom2_1.Text) > maxNum Then
                     MessageBox.Show("数値は" & minNum & "から" & maxNum & "の間で指定してください", "帳票出力", MessageBoxButtons.OK, MessageBoxIcon.Error)
                     Return False
                 End If
 
-                If CInt(formOutput.txtNumberTo2_1.Text) < minNum Or CInt(formOutput.txtNumberTo2_1.Text) > maxNum Then
+                If CInt(Me.txtNumberTo2_1.Text) < minNum Or CInt(Me.txtNumberTo2_1.Text) > maxNum Then
                     MessageBox.Show("数値は" & minNum & "から" & maxNum & "の間で指定してください", "帳票出力", MessageBoxButtons.OK, MessageBoxIcon.Error)
                     Return False
                 End If
 
                 '処理内容
-                Dim intMin, intMax As Integer
-                intMin = formOutput.txtNumberFrom2_1.Text
-                intMax = formOutput.txtNumberTo2_1.Text
+                strQuery &= "SELECT ログイン情報.顧客番号,ログイン情報.LOGIN_ID,顧客マスタ.氏名" & vbLf
+                strQuery &= "FROM 顧客マスタ" & vbLf
+                strQuery &= "LEFT JOIN ログイン情報" & vbLf
+                strQuery &= "ON 顧客マスタ.顧客番号 = ログイン情報.顧客番号" & vbLf
+                strQuery &= "WHERE ログイン情報.顧客番号" & vbLf
+                strQuery &= "BETWEEN ':ANS1' AND ':ANS2'"
 
-                oraComm &= "SELECT ログイン情報.顧客番号,ログイン情報.LOGIN_ID,顧客マスタ.氏名" & vbLf
-                oraComm &= "FROM 顧客マスタ" & vbLf
-                oraComm &= "LEFT JOIN ログイン情報" & vbLf
-                oraComm &= "ON 顧客マスタ.顧客番号 = ログイン情報.顧客番号" & vbLf
-                oraComm &= "WHERE ログイン情報.顧客番号" & vbLf
-                oraComm &= "BETWEEN '" & intMin & "' AND '" & intMax & "'"
+                strCommand = DataBase.getOraCommand(strQuery)
+                strCommand.CommandType = CommandType.Text
+
+                strCommand.BindByName = True
+                strCommand.Parameters.Add(New OracleParameter(":ANS1", OracleDbType.Decimal)).Value = Me.txtNumberFrom2_1.Text
+                strCommand.Parameters.Add(New OracleParameter(":ANS2", OracleDbType.Decimal)).Value = Me.txtNumberTo2_1.Text
 
 
             '回答文　課題PLSQL
@@ -394,12 +413,25 @@ Public Class formOutput
                 DataBase.doStored("RPG002")
 
                 '処理内容を、セレクト文で値を取得
-                oraComm &= "SELECT *" & vbLf
-                oraComm &= "FROM TRN_URIAGE"
+                strQuery &= "SELECT *" & vbLf
+                strQuery &= "FROM TRN_URIAGE"
+
+                strCommand = DataBase.getOraCommand(strQuery)
+                strCommand.CommandType = CommandType.Text
+
 
         End Select
 
-        ansStr = oraComm
+
+        Dim oraAdap As New OracleDataAdapter(strCommand)
+        Dim oraRead As OracleDataReader = strCommand.ExecuteReader()
+        Dim dSet As DataSet = New DataSet()
+
+        'SQL出力結果をデータテーブルに出力
+        oraAdap.Fill(dSet, "ExportDataTable")
+        dTable = dSet.Tables("ExportDataTable")
+
+        ansQuery = dTable
         Return True
 
     End Function
