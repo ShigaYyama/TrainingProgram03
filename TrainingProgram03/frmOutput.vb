@@ -171,7 +171,7 @@ Public Class formOutput
     Private Function queryCreate(cbo1 As String, cbo2 As String, ByRef ansQuery As DataTable) As Boolean
         queryCreate = False
 
-        Dim strQuery As String = Nothing
+        Dim connectQuery As String = Nothing
         Dim strCommand As OracleCommand = Nothing
 
         Dim dTable As DataTable = Nothing
@@ -203,14 +203,14 @@ Public Class formOutput
                     strOrder = "DESC"
                 End If
 
-                strQuery &= "SELECT DISTINCT 顧客マスタ.顧客番号,顧客マスタ.氏名" & vbLf
-                strQuery &= "FROM 顧客マスタ" & vbLf
-                strQuery &= "INNER JOIN 売場トラン" & vbLf
-                strQuery &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
-                strQuery &= "WHERE 売場トラン.売上金額>= :ANS1" & vbLf
-                strQuery &= "ORDER BY 顧客マスタ.顧客番号 " & strOrder
+                connectQuery &= "SELECT DISTINCT 顧客マスタ.顧客番号,顧客マスタ.氏名" & vbLf
+                connectQuery &= "FROM 顧客マスタ" & vbLf
+                connectQuery &= "INNER JOIN 売場トラン" & vbLf
+                connectQuery &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
+                connectQuery &= "WHERE 売場トラン.売上金額>= :ANS1" & vbLf
+                connectQuery &= "ORDER BY 顧客マスタ.顧客番号 " & strOrder
 
-                strCommand = DataBase.getOraCommand(strQuery)
+                strCommand = DataBase.getOraCommand(connectQuery)
                 strCommand.CommandType = CommandType.Text
 
                 strCommand.BindByName = True
@@ -235,14 +235,14 @@ Public Class formOutput
                     strGender = "'男','女'"
                 End If
 
-                strQuery &= "SELECT 顧客マスタ.性別,SUM(売場トラン.売上金額)AS 売上金額合計" & vbLf
-                strQuery &= "FROM 売場トラン" & vbLf
-                strQuery &= "INNER JOIN 顧客マスタ" & vbLf
-                strQuery &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
-                strQuery &= "GROUP BY 顧客マスタ.性別" & vbLf
-                strQuery &= "HAVING 顧客マスタ.性別 IN " & strGender
+                connectQuery &= "SELECT 顧客マスタ.性別,SUM(売場トラン.売上金額)AS 売上金額合計" & vbLf
+                connectQuery &= "FROM 売場トラン" & vbLf
+                connectQuery &= "INNER JOIN 顧客マスタ" & vbLf
+                connectQuery &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
+                connectQuery &= "GROUP BY 顧客マスタ.性別" & vbLf
+                connectQuery &= "HAVING 顧客マスタ.性別 IN " & strGender
 
-                strCommand = DataBase.getOraCommand(strQuery)
+                strCommand = DataBase.getOraCommand(connectQuery)
                 strCommand.CommandType = CommandType.Text
 
             '回答文　課題1-3
@@ -252,14 +252,14 @@ Public Class formOutput
                 Dim strArea As String
                 strArea = Me.ltbSalseFloor1_3.SelectedItem
 
-                strQuery &= "SELECT 顧客マスタ.氏名" & vbLf
-                strQuery &= "FROM 顧客マスタ" & vbLf
-                strQuery &= "INNER JOIN 売場トラン" & vbLf
-                strQuery &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
-                strQuery &= "WHERE 売場トラン.売場 = '" & strArea & "'" & vbLf
-                strQuery &= "GROUP BY 顧客マスタ.氏名"
+                connectQuery &= "SELECT 顧客マスタ.氏名" & vbLf
+                connectQuery &= "FROM 顧客マスタ" & vbLf
+                connectQuery &= "INNER JOIN 売場トラン" & vbLf
+                connectQuery &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
+                connectQuery &= "WHERE 売場トラン.売場 = '" & strArea & "'" & vbLf
+                connectQuery &= "GROUP BY 顧客マスタ.氏名"
 
-                strCommand = DataBase.getOraCommand(strQuery)
+                strCommand = DataBase.getOraCommand(connectQuery)
                 strCommand.CommandType = CommandType.Text
 
             '回答文　課題1-4
@@ -279,11 +279,11 @@ Public Class formOutput
                     strOrder = "DESC"
                 End If
 
-                strQuery &= "SELECT 氏名,TRUNC(( :ANS1 - TO_CHAR(生年月日, 'YYYYMMDD')) /10000, 0) AS 年齢" & vbLf
-                strQuery &= "FROM 顧客マスタ" & vbLf
-                strQuery &= "ORDER BY 顧客番号 " & strOrder
+                connectQuery &= "SELECT 氏名,TRUNC(( :ANS1 - TO_CHAR(生年月日, 'YYYYMMDD')) /10000, 0) AS 年齢" & vbLf
+                connectQuery &= "FROM 顧客マスタ" & vbLf
+                connectQuery &= "ORDER BY 顧客番号 " & strOrder
 
-                strCommand = DataBase.getOraCommand(strQuery)
+                strCommand = DataBase.getOraCommand(connectQuery)
                 strCommand.CommandType = CommandType.Text
 
                 strCommand.BindByName = True
@@ -314,16 +314,16 @@ Public Class formOutput
                 End If
 
                 '処理内容
-                strQuery &= "SELECT 氏名,連絡先１ AS 連絡先" & vbLf
-                strQuery &= "FROM 顧客マスタ" & vbLf
-                strQuery &= "WHERE 顧客番号" & vbLf
-                strQuery &= "BETWEEN ':ANS1' AND ':ANS2'" & vbLf
-                strQuery &= "UNION SELECT 氏名,連絡先２ AS 連絡先" & vbLf
-                strQuery &= "FROM 顧客マスタ" & vbLf
-                strQuery &= "WHERE 顧客番号" & vbLf
-                strQuery &= "BETWEEN ':ANS1' AND ':ANS2'"
+                connectQuery &= "SELECT 氏名,連絡先１ AS 連絡先" & vbLf
+                connectQuery &= "FROM 顧客マスタ" & vbLf
+                connectQuery &= "WHERE 顧客番号" & vbLf
+                connectQuery &= "BETWEEN ':ANS1' AND ':ANS2'" & vbLf
+                connectQuery &= "UNION SELECT 氏名,連絡先２ AS 連絡先" & vbLf
+                connectQuery &= "FROM 顧客マスタ" & vbLf
+                connectQuery &= "WHERE 顧客番号" & vbLf
+                connectQuery &= "BETWEEN ':ANS1' AND ':ANS2'"
 
-                strCommand = DataBase.getOraCommand(strQuery)
+                strCommand = DataBase.getOraCommand(connectQuery)
                 strCommand.CommandType = CommandType.Text
 
                 strCommand.BindByName = True
@@ -337,14 +337,14 @@ Public Class formOutput
                 Dim strArea As String
                 strArea = Me.ltbSalesFloor1_6.SelectedItem
 
-                strQuery &= "SELECT 顧客マスタ.氏名,COUNT(売場トラン.売場) AS 回数" & vbLf
-                strQuery &= "FROM 顧客マスタ" & vbLf
-                strQuery &= "LEFT JOIN 売場トラン" & vbLf
-                strQuery &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
-                strQuery &= "AND 売場トラン.売場 IN('" & strArea & "')" & vbLf
-                strQuery &= "GROUP BY 顧客マスタ.氏名"
+                connectQuery &= "SELECT 顧客マスタ.氏名,COUNT(売場トラン.売場) AS 回数" & vbLf
+                connectQuery &= "FROM 顧客マスタ" & vbLf
+                connectQuery &= "LEFT JOIN 売場トラン" & vbLf
+                connectQuery &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
+                connectQuery &= "AND 売場トラン.売場 IN('" & strArea & "')" & vbLf
+                connectQuery &= "GROUP BY 顧客マスタ.氏名"
 
-                strCommand = DataBase.getOraCommand(strQuery)
+                strCommand = DataBase.getOraCommand(connectQuery)
                 strCommand.CommandType = CommandType.Text
 
 
@@ -352,15 +352,15 @@ Public Class formOutput
             Case 6
 
                 '処理内容
-                strQuery &= "SELECT 顧客マスタ.氏名,COUNT(売場トラン.売場) AS 回数" & vbLf
-                strQuery &= "FROM 顧客マスタ" & vbLf
-                strQuery &= "LEFT JOIN 売場トラン" & vbLf
-                strQuery &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
-                strQuery &= "AND 売場トラン.売場 IN('レストラン')" & vbLf
-                strQuery &= "WHERE 顧客マスタ.氏名 LIKE '%:ANS1%'" & vbLf
-                strQuery &= "GROUP BY 顧客マスタ.氏名"
+                connectQuery &= "SELECT 顧客マスタ.氏名,COUNT(売場トラン.売場) AS 回数" & vbLf
+                connectQuery &= "FROM 顧客マスタ" & vbLf
+                connectQuery &= "LEFT JOIN 売場トラン" & vbLf
+                connectQuery &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
+                connectQuery &= "AND 売場トラン.売場 IN('レストラン')" & vbLf
+                connectQuery &= "WHERE 顧客マスタ.氏名 LIKE '%:ANS1%'" & vbLf
+                connectQuery &= "GROUP BY 顧客マスタ.氏名"
 
-                strCommand = DataBase.getOraCommand(strQuery)
+                strCommand = DataBase.getOraCommand(connectQuery)
                 strCommand.CommandType = CommandType.Text
 
                 strCommand.BindByName = True
@@ -391,14 +391,14 @@ Public Class formOutput
                 End If
 
                 '処理内容
-                strQuery &= "SELECT ログイン情報.顧客番号,ログイン情報.LOGIN_ID,顧客マスタ.氏名" & vbLf
-                strQuery &= "FROM 顧客マスタ" & vbLf
-                strQuery &= "LEFT JOIN ログイン情報" & vbLf
-                strQuery &= "ON 顧客マスタ.顧客番号 = ログイン情報.顧客番号" & vbLf
-                strQuery &= "WHERE ログイン情報.顧客番号" & vbLf
-                strQuery &= "BETWEEN ':ANS1' AND ':ANS2'"
+                connectQuery &= "SELECT ログイン情報.顧客番号,ログイン情報.LOGIN_ID,顧客マスタ.氏名" & vbLf
+                connectQuery &= "FROM 顧客マスタ" & vbLf
+                connectQuery &= "LEFT JOIN ログイン情報" & vbLf
+                connectQuery &= "ON 顧客マスタ.顧客番号 = ログイン情報.顧客番号" & vbLf
+                connectQuery &= "WHERE ログイン情報.顧客番号" & vbLf
+                connectQuery &= "BETWEEN ':ANS1' AND ':ANS2'"
 
-                strCommand = DataBase.getOraCommand(strQuery)
+                strCommand = DataBase.getOraCommand(connectQuery)
                 strCommand.CommandType = CommandType.Text
 
                 strCommand.BindByName = True
@@ -413,10 +413,10 @@ Public Class formOutput
                 DataBase.doStored("RPG002")
 
                 '処理内容を、セレクト文で値を取得
-                strQuery &= "SELECT *" & vbLf
-                strQuery &= "FROM TRN_URIAGE"
+                connectQuery &= "SELECT *" & vbLf
+                connectQuery &= "FROM TRN_URIAGE"
 
-                strCommand = DataBase.getOraCommand(strQuery)
+                strCommand = DataBase.getOraCommand(connectQuery)
                 strCommand.CommandType = CommandType.Text
 
 
