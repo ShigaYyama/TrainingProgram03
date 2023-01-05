@@ -171,8 +171,8 @@ Public Class formOutput
     Private Function queryCreate(cbo1 As String, cbo2 As String, ByRef ansQuery As DataTable) As Boolean
         queryCreate = False
 
-        Dim connectQuery As String = Nothing
-        Dim strCommand As OracleCommand = Nothing
+        Dim strSql As String = Nothing
+        Dim bindComm As OracleCommand = Nothing
 
         Dim dTable As DataTable = Nothing
 
@@ -203,18 +203,19 @@ Public Class formOutput
                     strOrder = "DESC"
                 End If
 
-                connectQuery &= "SELECT DISTINCT 顧客マスタ.顧客番号,顧客マスタ.氏名" & vbLf
-                connectQuery &= "FROM 顧客マスタ" & vbLf
-                connectQuery &= "INNER JOIN 売場トラン" & vbLf
-                connectQuery &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
-                connectQuery &= "WHERE 売場トラン.売上金額>= :ANS1" & vbLf
-                connectQuery &= "ORDER BY 顧客マスタ.顧客番号 " & strOrder
+                strSql &= "SELECT DISTINCT 顧客マスタ.顧客番号,顧客マスタ.氏名" & vbLf
+                strSql &= "FROM 顧客マスタ" & vbLf
+                strSql &= "INNER JOIN 売場トラン" & vbLf
+                strSql &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
+                strSql &= "WHERE 売場トラン.売上金額>= :ANS1" & vbLf
+                strSql &= "ORDER BY 顧客マスタ.顧客番号 " & strOrder
 
-                strCommand = DataBase.getOraCommand(connectQuery)
-                strCommand.CommandType = CommandType.Text
+                bindComm = DataBase.getOraCommand(strSql)
+                bindComm.CommandType = CommandType.Text
 
-                strCommand.BindByName = True
-                strCommand.Parameters.Add(New OracleParameter(":ANS1", OracleDbType.Varchar2)).Value = Me.txtUriage1_1.Text
+                bindComm.BindByName = True
+                bindComm.Parameters.Add(New OracleParameter(":ANS1", OracleDbType.Varchar2)).Value = Me.txtUriage1_1.Text
+
 
             '回答文　課題1-2
             Case 1
@@ -235,32 +236,34 @@ Public Class formOutput
                     strGender = "'男','女'"
                 End If
 
-                connectQuery &= "SELECT 顧客マスタ.性別,SUM(売場トラン.売上金額)AS 売上金額合計" & vbLf
-                connectQuery &= "FROM 売場トラン" & vbLf
-                connectQuery &= "INNER JOIN 顧客マスタ" & vbLf
-                connectQuery &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
-                connectQuery &= "GROUP BY 顧客マスタ.性別" & vbLf
-                connectQuery &= "HAVING 顧客マスタ.性別 IN " & strGender
+                strSql &= "SELECT 顧客マスタ.性別,SUM(売場トラン.売上金額)AS 売上金額合計" & vbLf
+                strSql &= "FROM 売場トラン" & vbLf
+                strSql &= "INNER JOIN 顧客マスタ" & vbLf
+                strSql &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
+                strSql &= "GROUP BY 顧客マスタ.性別" & vbLf
+                strSql &= "HAVING 顧客マスタ.性別 IN " & strGender
 
-                strCommand = DataBase.getOraCommand(connectQuery)
-                strCommand.CommandType = CommandType.Text
+                bindComm = DataBase.getOraCommand(strSql)
+                bindComm.CommandType = CommandType.Text
+
 
             '回答文　課題1-3
             Case 2
 
                 '処理内容
-                Dim strArea As String
-                strArea = Me.ltbSalseFloor1_3.SelectedItem
+                strSql &= "SELECT 顧客マスタ.氏名" & vbLf
+                strSql &= "FROM 顧客マスタ" & vbLf
+                strSql &= "INNER JOIN 売場トラン" & vbLf
+                strSql &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
+                strSql &= "WHERE 売場トラン.売場 = ':ANS1'" & vbLf
+                strSql &= "GROUP BY 顧客マスタ.氏名"
 
-                connectQuery &= "SELECT 顧客マスタ.氏名" & vbLf
-                connectQuery &= "FROM 顧客マスタ" & vbLf
-                connectQuery &= "INNER JOIN 売場トラン" & vbLf
-                connectQuery &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
-                connectQuery &= "WHERE 売場トラン.売場 = '" & strArea & "'" & vbLf
-                connectQuery &= "GROUP BY 顧客マスタ.氏名"
+                bindComm = DataBase.getOraCommand(strSql)
+                bindComm.CommandType = CommandType.Text
 
-                strCommand = DataBase.getOraCommand(connectQuery)
-                strCommand.CommandType = CommandType.Text
+                bindComm.BindByName = True
+                bindComm.Parameters.Add(New OracleParameter(":ANS1", OracleDbType.Varchar2)).Value = Me.ltbSalseFloor1_3.SelectedItem
+
 
             '回答文　課題1-4
             Case 3
@@ -279,15 +282,15 @@ Public Class formOutput
                     strOrder = "DESC"
                 End If
 
-                connectQuery &= "SELECT 氏名,TRUNC(( :ANS1 - TO_CHAR(生年月日, 'YYYYMMDD')) /10000, 0) AS 年齢" & vbLf
-                connectQuery &= "FROM 顧客マスタ" & vbLf
-                connectQuery &= "ORDER BY 顧客番号 " & strOrder
+                strSql &= "SELECT 氏名,TRUNC(( :ANS1 - TO_CHAR(生年月日, 'YYYYMMDD')) /10000, 0) AS 年齢" & vbLf
+                strSql &= "FROM 顧客マスタ" & vbLf
+                strSql &= "ORDER BY 顧客番号 " & strOrder
 
-                strCommand = DataBase.getOraCommand(connectQuery)
-                strCommand.CommandType = CommandType.Text
+                bindComm = DataBase.getOraCommand(strSql)
+                bindComm.CommandType = CommandType.Text
 
-                strCommand.BindByName = True
-                strCommand.Parameters.Add(New OracleParameter(":ANS1", OracleDbType.Decimal)).Value = CInt(Me.dtpBirthday1_4.Value.ToString("yyyyMMdd"))
+                bindComm.BindByName = True
+                bindComm.Parameters.Add(New OracleParameter(":ANS1", OracleDbType.Decimal)).Value = CInt(Me.dtpBirthday1_4.Value.ToString("yyyyMMdd"))
 
 
             '回答文　課題1-5
@@ -314,57 +317,58 @@ Public Class formOutput
                 End If
 
                 '処理内容
-                connectQuery &= "SELECT 氏名,連絡先１ AS 連絡先" & vbLf
-                connectQuery &= "FROM 顧客マスタ" & vbLf
-                connectQuery &= "WHERE 顧客番号" & vbLf
-                connectQuery &= "BETWEEN ':ANS1' AND ':ANS2'" & vbLf
-                connectQuery &= "UNION SELECT 氏名,連絡先２ AS 連絡先" & vbLf
-                connectQuery &= "FROM 顧客マスタ" & vbLf
-                connectQuery &= "WHERE 顧客番号" & vbLf
-                connectQuery &= "BETWEEN ':ANS1' AND ':ANS2'"
+                strSql &= "SELECT 氏名,連絡先１ AS 連絡先" & vbLf
+                strSql &= "FROM 顧客マスタ" & vbLf
+                strSql &= "WHERE 顧客番号" & vbLf
+                strSql &= "BETWEEN ':ANS1' AND ':ANS2'" & vbLf
+                strSql &= "UNION SELECT 氏名,連絡先２ AS 連絡先" & vbLf
+                strSql &= "FROM 顧客マスタ" & vbLf
+                strSql &= "WHERE 顧客番号" & vbLf
+                strSql &= "BETWEEN ':ANS1' AND ':ANS2'"
 
-                strCommand = DataBase.getOraCommand(connectQuery)
-                strCommand.CommandType = CommandType.Text
+                bindComm = DataBase.getOraCommand(strSql)
+                bindComm.CommandType = CommandType.Text
 
-                strCommand.BindByName = True
-                strCommand.Parameters.Add(New OracleParameter(":ANS1", OracleDbType.Decimal)).Value = Me.txtNumberFrom1_5.Text
-                strCommand.Parameters.Add(New OracleParameter(":ANS2", OracleDbType.Decimal)).Value = Me.txtNumberTo1_5.Text
+                bindComm.BindByName = True
+                bindComm.Parameters.Add(New OracleParameter(":ANS1", OracleDbType.Decimal)).Value = Me.txtNumberFrom1_5.Text
+                bindComm.Parameters.Add(New OracleParameter(":ANS2", OracleDbType.Decimal)).Value = Me.txtNumberTo1_5.Text
+
 
             '回答文　課題1-6
             Case 5
 
                 '処理内容
-                Dim strArea As String
-                strArea = Me.ltbSalesFloor1_6.SelectedItem
+                strSql &= "SELECT 顧客マスタ.氏名,COUNT(売場トラン.売場) AS 回数" & vbLf
+                strSql &= "FROM 顧客マスタ" & vbLf
+                strSql &= "LEFT JOIN 売場トラン" & vbLf
+                strSql &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
+                strSql &= "AND 売場トラン.売場 IN(':ANS1')" & vbLf
+                strSql &= "GROUP BY 顧客マスタ.氏名"
 
-                connectQuery &= "SELECT 顧客マスタ.氏名,COUNT(売場トラン.売場) AS 回数" & vbLf
-                connectQuery &= "FROM 顧客マスタ" & vbLf
-                connectQuery &= "LEFT JOIN 売場トラン" & vbLf
-                connectQuery &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
-                connectQuery &= "AND 売場トラン.売場 IN('" & strArea & "')" & vbLf
-                connectQuery &= "GROUP BY 顧客マスタ.氏名"
+                bindComm = DataBase.getOraCommand(strSql)
+                bindComm.CommandType = CommandType.Text
 
-                strCommand = DataBase.getOraCommand(connectQuery)
-                strCommand.CommandType = CommandType.Text
+                bindComm.BindByName = True
+                bindComm.Parameters.Add(New OracleParameter(":ANS1", OracleDbType.Varchar2)).Value = Me.ltbSalesFloor1_6.SelectedItem
 
 
             '回答文　課題1-7
             Case 6
 
                 '処理内容
-                connectQuery &= "SELECT 顧客マスタ.氏名,COUNT(売場トラン.売場) AS 回数" & vbLf
-                connectQuery &= "FROM 顧客マスタ" & vbLf
-                connectQuery &= "LEFT JOIN 売場トラン" & vbLf
-                connectQuery &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
-                connectQuery &= "AND 売場トラン.売場 IN('レストラン')" & vbLf
-                connectQuery &= "WHERE 顧客マスタ.氏名 LIKE '%:ANS1%'" & vbLf
-                connectQuery &= "GROUP BY 顧客マスタ.氏名"
+                strSql &= "SELECT 顧客マスタ.氏名,COUNT(売場トラン.売場) AS 回数" & vbLf
+                strSql &= "FROM 顧客マスタ" & vbLf
+                strSql &= "LEFT JOIN 売場トラン" & vbLf
+                strSql &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
+                strSql &= "AND 売場トラン.売場 IN('レストラン')" & vbLf
+                strSql &= "WHERE 顧客マスタ.氏名 LIKE '%:ANS1%'" & vbLf
+                strSql &= "GROUP BY 顧客マスタ.氏名"
 
-                strCommand = DataBase.getOraCommand(connectQuery)
-                strCommand.CommandType = CommandType.Text
+                bindComm = DataBase.getOraCommand(strSql)
+                bindComm.CommandType = CommandType.Text
 
-                strCommand.BindByName = True
-                strCommand.Parameters.Add(New OracleParameter(":ANS1", OracleDbType.Varchar2)).Value = Me.txtSearch1_7.Text
+                bindComm.BindByName = True
+                bindComm.Parameters.Add(New OracleParameter(":ANS1", OracleDbType.Varchar2)).Value = Me.txtSearch1_7.Text
 
 
             '回答文　課題2-1
@@ -391,19 +395,19 @@ Public Class formOutput
                 End If
 
                 '処理内容
-                connectQuery &= "SELECT ログイン情報.顧客番号,ログイン情報.LOGIN_ID,顧客マスタ.氏名" & vbLf
-                connectQuery &= "FROM 顧客マスタ" & vbLf
-                connectQuery &= "LEFT JOIN ログイン情報" & vbLf
-                connectQuery &= "ON 顧客マスタ.顧客番号 = ログイン情報.顧客番号" & vbLf
-                connectQuery &= "WHERE ログイン情報.顧客番号" & vbLf
-                connectQuery &= "BETWEEN ':ANS1' AND ':ANS2'"
+                strSql &= "SELECT ログイン情報.顧客番号,ログイン情報.LOGIN_ID,顧客マスタ.氏名" & vbLf
+                strSql &= "FROM 顧客マスタ" & vbLf
+                strSql &= "LEFT JOIN ログイン情報" & vbLf
+                strSql &= "ON 顧客マスタ.顧客番号 = ログイン情報.顧客番号" & vbLf
+                strSql &= "WHERE ログイン情報.顧客番号" & vbLf
+                strSql &= "BETWEEN ':ANS1' AND ':ANS2'"
 
-                strCommand = DataBase.getOraCommand(connectQuery)
-                strCommand.CommandType = CommandType.Text
+                bindComm = DataBase.getOraCommand(strSql)
+                bindComm.CommandType = CommandType.Text
 
-                strCommand.BindByName = True
-                strCommand.Parameters.Add(New OracleParameter(":ANS1", OracleDbType.Decimal)).Value = Me.txtNumberFrom2_1.Text
-                strCommand.Parameters.Add(New OracleParameter(":ANS2", OracleDbType.Decimal)).Value = Me.txtNumberTo2_1.Text
+                bindComm.BindByName = True
+                bindComm.Parameters.Add(New OracleParameter(":ANS1", OracleDbType.Decimal)).Value = Me.txtNumberFrom2_1.Text
+                bindComm.Parameters.Add(New OracleParameter(":ANS2", OracleDbType.Decimal)).Value = Me.txtNumberTo2_1.Text
 
 
             '回答文　課題PLSQL
@@ -413,18 +417,17 @@ Public Class formOutput
                 DataBase.doStored("RPG002")
 
                 '処理内容を、セレクト文で値を取得
-                connectQuery &= "SELECT *" & vbLf
-                connectQuery &= "FROM TRN_URIAGE"
+                strSql &= "SELECT *" & vbLf
+                strSql &= "FROM TRN_URIAGE"
 
-                strCommand = DataBase.getOraCommand(connectQuery)
-                strCommand.CommandType = CommandType.Text
+                bindComm = DataBase.getOraCommand(strSql)
+                bindComm.CommandType = CommandType.Text
 
 
         End Select
 
-
-        Dim oraAdap As New OracleDataAdapter(strCommand)
-        Dim oraRead As OracleDataReader = strCommand.ExecuteReader()
+        Dim oraAdap As New OracleDataAdapter(bindComm)
+        Dim oraRead As OracleDataReader = bindComm.ExecuteReader()
         Dim dSet As DataSet = New DataSet()
 
         'SQL出力結果をデータテーブルに出力
