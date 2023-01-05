@@ -91,6 +91,7 @@ Public Class DataBase
 
     End Sub
 
+    'SQL文作成用にオラクルを展開
     Public Shared Function getOraCommand(strQuery As String) As OracleCommand
 
         Dim oraComm As OracleCommand = New OracleCommand(strQuery, conn)
