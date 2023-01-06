@@ -233,7 +233,7 @@ Public Class formOutput
                 ElseIf Me.rbtSexF1_2.Checked = True Then
                     strGender = "'女'"
                 Else
-                    strGender = "'男','女'"
+                    strGender = "('男','女')"
                 End If
 
                 strSql &= "SELECT 顧客マスタ.性別,SUM(売場トラン.売上金額)AS 売上金額合計" & vbLf
@@ -255,7 +255,7 @@ Public Class formOutput
                 strSql &= "FROM 顧客マスタ" & vbLf
                 strSql &= "INNER JOIN 売場トラン" & vbLf
                 strSql &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
-                strSql &= "WHERE 売場トラン.売場 = ':ANS1'" & vbLf
+                strSql &= "WHERE 売場トラン.売場 = :ANS1" & vbLf
                 strSql &= "GROUP BY 顧客マスタ.氏名"
 
                 bindComm = DataBase.getOraCommand(strSql)
@@ -320,11 +320,11 @@ Public Class formOutput
                 strSql &= "SELECT 氏名,連絡先１ AS 連絡先" & vbLf
                 strSql &= "FROM 顧客マスタ" & vbLf
                 strSql &= "WHERE 顧客番号" & vbLf
-                strSql &= "BETWEEN ':ANS1' AND ':ANS2'" & vbLf
+                strSql &= "BETWEEN :ANS1 AND :ANS2" & vbLf
                 strSql &= "UNION SELECT 氏名,連絡先２ AS 連絡先" & vbLf
                 strSql &= "FROM 顧客マスタ" & vbLf
                 strSql &= "WHERE 顧客番号" & vbLf
-                strSql &= "BETWEEN ':ANS1' AND ':ANS2'"
+                strSql &= "BETWEEN :ANS1 AND :ANS2"
 
                 bindComm = DataBase.getOraCommand(strSql)
                 bindComm.CommandType = CommandType.Text
@@ -342,7 +342,7 @@ Public Class formOutput
                 strSql &= "FROM 顧客マスタ" & vbLf
                 strSql &= "LEFT JOIN 売場トラン" & vbLf
                 strSql &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
-                strSql &= "AND 売場トラン.売場 IN(':ANS1')" & vbLf
+                strSql &= "AND 売場トラン.売場 IN( :ANS1 )" & vbLf
                 strSql &= "GROUP BY 顧客マスタ.氏名"
 
                 bindComm = DataBase.getOraCommand(strSql)
@@ -355,20 +355,22 @@ Public Class formOutput
             '回答文　課題1-7
             Case 6
 
+                Dim strAns As String = "'% :ANS1 %'"
+
                 '処理内容
                 strSql &= "SELECT 顧客マスタ.氏名,COUNT(売場トラン.売場) AS 回数" & vbLf
                 strSql &= "FROM 顧客マスタ" & vbLf
                 strSql &= "LEFT JOIN 売場トラン" & vbLf
                 strSql &= "ON 顧客マスタ.顧客番号 = 売場トラン.顧客番号" & vbLf
                 strSql &= "AND 売場トラン.売場 IN('レストラン')" & vbLf
-                strSql &= "WHERE 顧客マスタ.氏名 LIKE '%:ANS1%'" & vbLf
+                strSql &= "WHERE 顧客マスタ.氏名 LIKE :ANS1" & vbLf
                 strSql &= "GROUP BY 顧客マスタ.氏名"
 
                 bindComm = DataBase.getOraCommand(strSql)
                 bindComm.CommandType = CommandType.Text
 
                 bindComm.BindByName = True
-                bindComm.Parameters.Add(New OracleParameter(":ANS1", OracleDbType.Varchar2)).Value = Me.txtSearch1_7.Text
+                bindComm.Parameters.Add(New OracleParameter(":ANS1", OracleDbType.Varchar2)).Value = "%" & Me.txtSearch1_7.Text & "%"
 
 
             '回答文　課題2-1
@@ -400,7 +402,7 @@ Public Class formOutput
                 strSql &= "LEFT JOIN ログイン情報" & vbLf
                 strSql &= "ON 顧客マスタ.顧客番号 = ログイン情報.顧客番号" & vbLf
                 strSql &= "WHERE ログイン情報.顧客番号" & vbLf
-                strSql &= "BETWEEN ':ANS1' AND ':ANS2'"
+                strSql &= "BETWEEN :ANS1 AND :ANS2"
 
                 bindComm = DataBase.getOraCommand(strSql)
                 bindComm.CommandType = CommandType.Text
